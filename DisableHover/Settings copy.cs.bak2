@@ -1,0 +1,69 @@
+using System;
+using System.IO;
+using UnityEngine;
+
+namespace DisableHover
+{
+    public static class Settings
+    {
+        private static string FilePath =>
+            Path.Combine(
+                Application.persistentDataPath,
+                ".cache",
+                "Mods",
+                "mods_unmanaged",
+                "DisableHover",
+                "settings.txt"
+            );
+
+        public static bool TooltipsDisabled = false;
+
+        public static void Load()
+        {
+            try
+            {
+                Mod.log.Info($"[Settings] Load from: {FilePath}");
+
+                if (!File.Exists(FilePath))
+                {
+                    Mod.log.Warn("[Settings] File missing → creating with default value");
+                    File.WriteAllText(FilePath, "false");
+                }
+
+                string text = File.ReadAllText(FilePath).Trim();
+                Mod.log.Info($"[Settings] Raw file content: '{text}'");
+
+                if (bool.TryParse(text, out bool value))
+                    TooltipsDisabled = value;
+                else
+                {
+                    Mod.log.Warn("[Settings] Invalid content → resetting to false");
+                    TooltipsDisabled = false;
+                }
+
+                Mod.log.Info($"[Settings] Parsed value = {TooltipsDisabled}");
+            }
+            catch (Exception ex)
+            {
+                Mod.log.Error($"[Settings] Load failed: {ex}");
+                TooltipsDisabled = false;
+            }
+        }
+        public static void Save()
+        {
+            try
+            {
+                Mod.log.Info($"[Settings] Save to: {FilePath}");
+                Mod.log.Info($"[Settings] Writing value: {TooltipsDisabled}");
+
+                File.WriteAllText(FilePath, TooltipsDisabled.ToString());
+
+                Mod.log.Info("[Settings] Save OK");
+            }
+            catch (Exception ex)
+            {
+                Mod.log.Error($"[Settings] Save failed: {ex}");
+            }
+        }
+    }
+}

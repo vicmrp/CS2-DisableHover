@@ -1,15 +1,31 @@
 using System;
 using System.IO;
 using UnityEngine;
+using Newtonsoft.Json;
 
 namespace DisableHover
 {
+    [Serializable]
+    public class ConfigData
+    {
+        public bool tooltipsDisabled = false;
+    }
+
     public static class Settings
     {
-        private static string FilePath =>
-            Path.Combine(Application.persistentDataPath, "disablehover.txt");
+        private static string FolderPath =>
+            Path.Combine(
+                Application.persistentDataPath,
+                ".cache",
+                "Mods",
+                "mods_unmanaged",
+                "DisableHover"
+            );
 
-        public static bool TooltipsDisabled = false;
+        private static string FilePath =>
+            Path.Combine(FolderPath, "config.json");
+
+        public static ConfigData Data = new ConfigData();
 
         public static void Load()
         {
@@ -17,41 +33,46 @@ namespace DisableHover
             {
                 Mod.log.Info($"[Settings] Load from: {FilePath}");
 
+                if (!Directory.Exists(FolderPath))
+                {
+                    Mod.log.Info($"[Settings] Creating folder: {FolderPath}");
+                    Directory.CreateDirectory(FolderPath);
+                }
+
                 if (!File.Exists(FilePath))
                 {
-                    Mod.log.Warn("[Settings] File missing → creating with default value");
-                    File.WriteAllText(FilePath, "false");
+                    Mod.log.Warn("[Settings] File missing → creating default config");
+
+                    Save(); // create default file
+                    return;
                 }
 
-                string text = File.ReadAllText(FilePath).Trim();
-                Mod.log.Info($"[Settings] Raw file content: '{text}'");
+                string json = File.ReadAllText(FilePath);
+                Mod.log.Info($"[Settings] Raw JSON: {json}");
 
-                if (bool.TryParse(text, out bool value))
-                    TooltipsDisabled = value;
-                else
-                {
-                    Mod.log.Warn("[Settings] Invalid content → resetting to false");
-                    TooltipsDisabled = false;
-                }
+                Data = JsonConvert.DeserializeObject<ConfigData>(json) ?? new ConfigData();
 
-                Mod.log.Info($"[Settings] Parsed value = {TooltipsDisabled}");
+                Mod.log.Info($"[Settings] Parsed tooltipsDisabled = {Data.tooltipsDisabled}");
             }
             catch (Exception ex)
             {
                 Mod.log.Error($"[Settings] Load failed: {ex}");
-                TooltipsDisabled = false;
+                Data = new ConfigData();
             }
         }
+
         public static void Save()
         {
             try
             {
-                Mod.log.Info($"[Settings] Save to: {FilePath}");
-                Mod.log.Info($"[Settings] Writing value: {TooltipsDisabled}");
+                if (!Directory.Exists(FolderPath))
+                    Directory.CreateDirectory(FolderPath);
 
-                File.WriteAllText(FilePath, TooltipsDisabled.ToString());
+                string json = JsonConvert.SerializeObject(Data, Formatting.Indented);
 
-                Mod.log.Info("[Settings] Save OK");
+                File.WriteAllText(FilePath, json);
+
+                Mod.log.Info($"[Settings] Saved JSON:\n{json}");
             }
             catch (Exception ex)
             {

@@ -1,7 +1,9 @@
-export function inspectElement(el: HTMLElement | null) {
+const MAX_PARENT_DEPTH = 5; // 🔧 change this to control how many parents you inspect
+
+export function inspectElement(el: HTMLElement | null, level = 0) {
     if (!el) return;
 
-    console.group("🔍 ELEMENT INSPECTOR");
+    console.group(`🔍 ELEMENT INSPECTOR (level ${level})`);
 
     console.log("👉 Element:", el);
     console.log("👉 Tag:", el.tagName);
@@ -35,7 +37,17 @@ export function inspectElement(el: HTMLElement | null) {
     console.groupEnd();
 }
 
+export function inspectWithParents(el: HTMLElement | null) {
+    let current = el;
+    let depth = 0;
 
+    while (current && depth <= MAX_PARENT_DEPTH) {
+        inspectElement(current, depth);
+
+        current = current.parentElement;
+        depth++;
+    }
+}
 
 export function enableDeepInspector() {
     window.addEventListener(
@@ -47,10 +59,7 @@ export function enableDeepInspector() {
             ) as HTMLElement;
 
             console.log("========== CLICK ==========");
-            inspectElement(el);
-
-            // Also inspect parent (very useful)
-            inspectElement(el?.parentElement || null);
+            inspectWithParents(el);
         },
         true
     );

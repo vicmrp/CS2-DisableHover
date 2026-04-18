@@ -1,9 +1,4 @@
-import {
-    setTooltipsDisabled,
-    areTooltipsDisabled,
-    applyTooltipBlocker,
-    removeTooltipBlocker
-} from "../mods/tooltipBlocker";
+import { setTooltipsDisabled, areTooltipsDisabled } from "../mods/tooltipBlocker";
 
 /**
  * Find a settings row by visible label text
@@ -21,12 +16,13 @@ export function findSettingRowByText(text: string): HTMLElement | null {
 }
 
 /**
- * Update CS2 toggle visual state
+ * Update CS2 toggle visual state (checked / unchecked)
  */
 function updateToggleVisual(el: HTMLElement, enabled: boolean) {
     el.classList.toggle("checked", enabled);
     el.classList.toggle("unchecked", !enabled);
 
+    // update inner checkmark (visual)
     const checkmark = el.querySelector("[class*='checkmark']");
     if (checkmark) {
         checkmark.classList.toggle("checked", enabled);
@@ -34,10 +30,11 @@ function updateToggleVisual(el: HTMLElement, enabled: boolean) {
 }
 
 /**
- * Inject custom toggle into settings
+ * Inject our custom toggle into Interface settings
  */
 export function injectBelowWhatsNew() {
     const row = findSettingRowByText("What's New");
+
     if (!row) return;
 
     // prevent duplicates
@@ -46,16 +43,18 @@ export function injectBelowWhatsNew() {
     const container = row.parentElement;
     if (!container) return;
 
-    // clone row
+    // clone an existing CS2 row (keeps styling)
     const clone = row.cloneNode(true) as HTMLElement;
     clone.id = "my-toggle-row";
 
+    // remove React bindings (VERY IMPORTANT)
     const cleanClone = clone.cloneNode(true) as HTMLElement;
 
-    // change label
+    // ✅ Set correct label
     const label = cleanClone.querySelector("div[class*='label']");
     if (label) label.textContent = "Enable Tooltips";
 
+    // find actual toggle button
     const toggle = cleanClone.querySelector(
         "[role='button'], button, [class*='toggle']"
     ) as HTMLElement | null;
@@ -63,33 +62,24 @@ export function injectBelowWhatsNew() {
     if (toggle) {
         toggle.style.pointerEvents = "auto";
 
-        // init state from C#
-        areTooltipsDisabled().then(disabled => {
-            const enabled = !disabled;
-            updateToggleVisual(toggle, enabled);
-        });
+        // ✅ Enabled = inverse of disabled
+        const enabled = !areTooltipsDisabled();
 
-        toggle.addEventListener("click", async (e) => {
+        updateToggleVisual(toggle, enabled);
+
+        toggle.addEventListener("click", (e) => {
             e.stopPropagation();
             e.preventDefault();
 
-            const currentDisabled = await areTooltipsDisabled();
-            const nextDisabled = !currentDisabled;
+            const currentEnabled = !areTooltipsDisabled();
+            const nextEnabled = !currentEnabled;
 
-            // save via C#
-            setTooltipsDisabled(nextDisabled);
+            // invert for storage
+            setTooltipsDisabled(!nextEnabled);
 
-            // update UI
-            updateToggleVisual(toggle, !nextDisabled);
+            updateToggleVisual(toggle, nextEnabled);
 
-            // apply/remove CSS immediately
-            if (nextDisabled) {
-                applyTooltipBlocker();
-            } else {
-                removeTooltipBlocker();
-            }
-
-            console.log("[DisableHover] Tooltips disabled:", nextDisabled);
+            console.log("[Toggle] Enable Tooltips:", nextEnabled);
         });
     }
 

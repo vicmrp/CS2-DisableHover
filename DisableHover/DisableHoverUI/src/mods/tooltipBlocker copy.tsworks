@@ -1,6 +1,5 @@
-import { trigger, bindValue } from "cs2/api";
 const STORAGE_KEY = "disablehover-tooltips-disabled";
-const GROUP = "DisableHover";
+
 let tooltipStyle: HTMLStyleElement | null = null;
 
 const TOOLTIP_CSS = `
@@ -20,20 +19,8 @@ export function setTooltipsDisabled(value: boolean): void {
     localStorage.setItem(STORAGE_KEY, String(value));
 
     if (value) {
-
-        const binding = bindValue<boolean>(GROUP, "GetTooltipsDisabled");
-        binding.subscribe((value) => {
-            console.log("[UI] Received value from C#:", value);
-        });
-        trigger(GROUP, "SetTooltipsDisabled", value);
-
         applyTooltipBlocker();
     } else {
-        const binding = bindValue<boolean>(GROUP, "GetTooltipsDisabled");
-        binding.subscribe((value) => {
-            console.log("[UI] Received value from C#:", value);
-        });
-        trigger(GROUP, "SetTooltipsDisabled", false);
         removeTooltipBlocker();
     }
 }
