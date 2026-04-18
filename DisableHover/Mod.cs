@@ -15,6 +15,8 @@ namespace DisableHover
             log.Info(nameof(OnLoad));
 
             updateSystem.UpdateAt<TooltipSystem>(SystemUpdatePhase.UIUpdate);
+
+            log.Info("TooltipSystem registered");
         }
 
         public void OnDispose()

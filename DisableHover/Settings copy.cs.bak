@@ -17,12 +17,38 @@ namespace DisableHover
             {
                 Mod.log.Info($"[Settings] Load from: {FilePath}");
 
-                if (!File.Exists(FilePath))
+                // Ensure directory exists
+                string dir = Path.GetDirectoryName(FilePath);
+                if (!Directory.Exists(dir))
                 {
-                    Mod.log.Warn("[Settings] File missing → creating with default value");
-                    File.WriteAllText(FilePath, "false");
+                    Mod.log.Info($"[Settings] Creating directory: {dir}");
+                    Directory.CreateDirectory(dir);
                 }
 
+                // Create file if missing
+                if (!File.Exists(FilePath))
+                {
+                    Mod.log.Warn("[Settings] File does not exist → creating test file");
+
+                    try
+                    {
+                        File.WriteAllText(FilePath, "false");
+
+                        if (File.Exists(FilePath))
+                            Mod.log.Info("[Settings] File successfully created");
+                        else
+                            Mod.log.Error("[Settings] File creation attempted but still missing!");
+                    }
+                    catch (Exception createEx)
+                    {
+                        Mod.log.Error($"[Settings] File creation FAILED: {createEx}");
+                    }
+
+                    TooltipsDisabled = false;
+                    return;
+                }
+
+                // Read file
                 string text = File.ReadAllText(FilePath).Trim();
                 Mod.log.Info($"[Settings] Raw file content: '{text}'");
 
@@ -42,6 +68,7 @@ namespace DisableHover
                 TooltipsDisabled = false;
             }
         }
+
         public static void Save()
         {
             try

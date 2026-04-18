@@ -2,6 +2,7 @@ import { ModRegistrar } from "cs2/modding";
 import { injectBelowWhatsNew } from "./helper/find-element";
 import { enableDeepInspector } from "./helper/inspect-element";
 import { initializeTooltipBlocker } from "./mods/tooltipBlocker";
+import { testCommunication } from "helper/test-communication";
 
 const register: ModRegistrar = () => {
 
@@ -12,7 +13,9 @@ const register: ModRegistrar = () => {
     enableDeepInspector();
 
     // sync CSS with C# state on load
-    initializeTooltipBlocker();
+    // initializeTooltipBlocker();
+    testCommunication();
+    console.log("regestrating mods")
 };
 
 export default register;
