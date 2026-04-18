@@ -2,12 +2,11 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { ModRegistrar } from "cs2/modding";
 import { bindValue, trigger } from "cs2/api";
-import { enableDeepInspector } from "helper/inspect-element";
 
 const GROUP = "DisableHover";
 
 /**
- * ✅ TRUE native-looking toggle (uses CS2 classes)
+ * Native-like toggle component (uses your C# binding)
  */
 function NativeLikeToggle() {
     const binding = bindValue<boolean>(GROUP, "GetTooltipsDisabled");
@@ -27,9 +26,25 @@ function NativeLikeToggle() {
     return (
         <div
             onClick={toggle}
-            className={`toggle_cca item-mouse-states_Fmi toggle_th_ ${value ? "checked" : "unchecked"}`}
+            style={{
+                width: "18px",
+                height: "18px",
+                border: "2px solid #6fa8dc",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+            }}
         >
-            <div className={`checkmark_NXV ${value ? "checked" : ""}`} />
+            {value && (
+                <div
+                    style={{
+                        width: "10px",
+                        height: "10px",
+                        background: "#6fa8dc"
+                    }}
+                />
+            )}
         </div>
     );
 }
@@ -38,8 +53,6 @@ function NativeLikeToggle() {
  * Register mod
  */
 const register: ModRegistrar = (moduleRegistry) => {
-
-    enableDeepInspector();
 
     moduleRegistry.extend(
         "game-ui/menu/components/options-screen/option-page/option-page.tsx",
@@ -51,10 +64,7 @@ const register: ModRegistrar = (moduleRegistry) => {
             return (props) => {
 
                 React.useEffect(() => {
-                    let injected = false;
-
                     const inject = () => {
-                        if (injected) return;
 
                         const labels = document.querySelectorAll("div");
 
@@ -64,21 +74,21 @@ const register: ModRegistrar = (moduleRegistry) => {
                                 const row = el.closest("div[class*='field']");
                                 if (!row) continue;
 
+                                // prevent duplicate injection
                                 if (row.nextElementSibling?.id === "tooltip-toggle-row") return;
 
-                                // 🔥 clone full row (keeps layout + spacing)
+                                // 🔥 clone existing row (perfect styling)
                                 const clone = row.cloneNode(true) as HTMLElement;
                                 clone.id = "tooltip-toggle-row";
 
-                                // ✅ change label text
+                                // replace label text
                                 const label = clone.querySelector("div[class*='label']");
                                 if (label) label.textContent = "Enable Tooltips";
 
-                                // ❗ remove original toggle completely
-                                const originalRight = clone.lastElementChild as HTMLElement;
-                                if (originalRight) originalRight.remove();
+                                // find right side (toggle container)
+                                const right = clone.lastElementChild as HTMLElement;
+                                if (right) right.remove(); // remove original toggle completely
 
-                                // ✅ rebuild right side (clean)
                                 const newRight = document.createElement("div");
                                 newRight.style.display = "flex";
                                 newRight.style.alignItems = "center";
@@ -88,34 +98,22 @@ const register: ModRegistrar = (moduleRegistry) => {
 
                                 clone.appendChild(newRight);
 
-                                // ✅ mount native-like toggle
                                 const root = createRoot(mount);
                                 root.render(<NativeLikeToggle />);
-
-                                // insert directly under "What's New"
                                 row.parentElement?.insertBefore(
                                     clone,
                                     row.nextElementSibling
                                 );
 
-                                console.log("✅ Injected native toggle");
-                                injected = true;
+                                console.log("✅ Injected Enable Tooltips toggle");
+
                                 return;
                             }
                         }
                     };
 
-                    // run immediately
-                    inject();
-
-                    // fallback observer (no delay now)
-                    const observer = new MutationObserver(() => inject());
-                    observer.observe(document.body, {
-                        childList: true,
-                        subtree: true
-                    });
-
-                    return () => observer.disconnect();
+                    const interval = setInterval(inject, 400);
+                    return () => clearInterval(interval);
 
                 }, []);
 

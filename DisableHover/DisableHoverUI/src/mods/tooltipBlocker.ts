@@ -59,6 +59,7 @@ export function removeTooltipBlocker(): void {
 }
 
 export function initializeTooltipBlocker(): void {
+    console.log("Initializing Tooltips")
     if (areTooltipsDisabled()) {
         applyTooltipBlocker();
     } else {

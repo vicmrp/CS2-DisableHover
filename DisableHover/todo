@@ -3,3 +3,5 @@ pretty sure the button will not be there, if the user, uses another language tha
 find a less loopy way of attaching the button injectBelowWhatsNew(), instead of using setInterval
 
 make a small gif how it works
+
+there is still a problem with get the value, once the game loads. But the value can be changed from the game
