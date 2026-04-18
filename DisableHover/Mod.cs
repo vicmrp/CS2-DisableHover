@@ -1,9 +1,6 @@
 ﻿using Colossal.Logging;
 using Game;
 using Game.Modding;
-using Game.SceneFlow;
-using HarmonyLib;
-using System.Reflection;
 
 namespace DisableHover
 {
@@ -14,13 +11,6 @@ namespace DisableHover
         public void OnLoad(UpdateSystem updateSystem)
         {
             log.Info(nameof(OnLoad));
-
-            // if (GameManager.instance.modManager.TryGetExecutableAsset(this, out var asset))
-            //     log.Info($"Current mod asset at {asset.path}");
-
-
-var harmony = new Harmony("disable.hover.tooltip");
-harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
         public void OnDispose()

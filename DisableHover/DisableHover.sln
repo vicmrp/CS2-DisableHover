@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisableHover", "DisableHover.csproj", "{E475CED9-BFF8-4E94-28BE-7C8E1A1B67CD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E475CED9-BFF8-4E94-28BE-7C8E1A1B67CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E475CED9-BFF8-4E94-28BE-7C8E1A1B67CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E475CED9-BFF8-4E94-28BE-7C8E1A1B67CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E475CED9-BFF8-4E94-28BE-7C8E1A1B67CD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DF1E3493-7B51-4858-AF04-9E43A31871BB}
+	EndGlobalSection
+EndGlobal

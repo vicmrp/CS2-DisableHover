@@ -7,21 +7,22 @@ import {
 } from "./tooltipBlocker";
 
 export const PauseMenuButton = () => {
-    const [disabled, setDisabled] = useState(areTooltipsDisabled());
+    const [enabled, setEnabled] = useState(!areTooltipsDisabled());
 
     useEffect(() => {
         initializeTooltipBlocker();
     }, []);
 
     const onClick = () => {
-        const next = !disabled;
-        setTooltipsDisabled(next);
-        setDisabled(next);
+        const nextEnabled = !enabled;
+
+        setTooltipsDisabled(!nextEnabled); // invert
+        setEnabled(nextEnabled);
     };
 
     return (
         <MenuButton onClick={onClick}>
-            {disabled ? "Enable Tooltips" : "Disable Tooltips"}
+            {enabled ? "Disable Tooltips" : "Enable Tooltips"}
         </MenuButton>
     );
 };

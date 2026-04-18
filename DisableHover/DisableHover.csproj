@@ -58,28 +58,6 @@
 		<None Include="$(ModTargetsFile)" Link="Properties\Mod.targets" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <PackageReference Include="Lib.Harmony" Version="2.4.2" />
-	</ItemGroup>
-
-	<ItemGroup>
-	<Reference Include="Game">
-		<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Game.dll</HintPath>
-	</Reference>
-
-	<Reference Include="Colossal.UI">
-		<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Colossal.UI.dll</HintPath>
-	</Reference>
-
-	<Reference Include="Colossal.UI.Binding">
-		<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Colossal.UI.Binding.dll</HintPath>
-	</Reference>
-
-	  <Reference Include="UnityEngine">
-    <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
-  </Reference>
-	</ItemGroup>
-
 
 	<Target Name="BuildUI" AfterTargets="AfterBuild">
 		<Exec Command="npm run build" WorkingDirectory="$(ProjectDir)/DisableHoverUI" />
