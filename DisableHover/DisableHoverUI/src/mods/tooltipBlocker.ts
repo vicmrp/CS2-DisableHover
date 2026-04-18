@@ -1,4 +1,6 @@
-const STORAGE_KEY = "disablehover-tooltips-disabled";
+import { call, trigger } from "cs2/api";
+
+const GROUP = "DisableHover";
 
 let tooltipStyle: HTMLStyleElement | null = null;
 
@@ -11,17 +13,20 @@ const TOOLTIP_CSS = `
     }
 `;
 
-export function areTooltipsDisabled(): boolean {
-    return localStorage.getItem(STORAGE_KEY) === "true";
+export async function areTooltipsDisabled(): Promise<boolean> {
+    try {
+        return await call<boolean>(GROUP, "GetTooltipsDisabled");
+    } catch (e) {
+        console.error("[DisableHover] Get failed", e);
+        return false;
+    }
 }
 
-export function setTooltipsDisabled(value: boolean): void {
-    localStorage.setItem(STORAGE_KEY, String(value));
-
-    if (value) {
-        applyTooltipBlocker();
-    } else {
-        removeTooltipBlocker();
+export async function setTooltipsDisabled(value: boolean): Promise<void> {
+    try {
+        await call<void>(GROUP, "SetTooltipsDisabled", value);
+    } catch (e) {
+        console.error("[DisableHover] Set failed", e);
     }
 }
 
@@ -29,11 +34,10 @@ export function applyTooltipBlocker(): void {
     if (tooltipStyle) return;
 
     tooltipStyle = document.createElement("style");
-    tooltipStyle.setAttribute("data-disablehover-tooltips", "true");
     tooltipStyle.textContent = TOOLTIP_CSS;
     document.head.appendChild(tooltipStyle);
 
-    console.log("[DisableHover] Tooltip blocker enabled");
+    console.log("[DisableHover] ENABLED");
 }
 
 export function removeTooltipBlocker(): void {
@@ -42,13 +46,12 @@ export function removeTooltipBlocker(): void {
     tooltipStyle.remove();
     tooltipStyle = null;
 
-    console.log("[DisableHover] Tooltip blocker disabled");
+    console.log("[DisableHover] DISABLED");
 }
 
-export function initializeTooltipBlocker(): void {
-    if (areTooltipsDisabled()) {
-        applyTooltipBlocker();
-    } else {
-        removeTooltipBlocker();
-    }
+export async function initializeTooltipBlocker(): Promise<void> {
+    const disabled = await areTooltipsDisabled();
+
+    if (disabled) applyTooltipBlocker();
+    else removeTooltipBlocker();
 }

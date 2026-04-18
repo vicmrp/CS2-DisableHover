@@ -6,11 +6,15 @@ namespace DisableHover
 {
     public class Mod : IMod
     {
-        public static ILog log = LogManager.GetLogger($"{nameof(DisableHover)}.{nameof(Mod)}").SetShowsErrorsInUI(false);
+        public static ILog log = LogManager
+            .GetLogger($"{nameof(DisableHover)}.{nameof(Mod)}")
+            .SetShowsErrorsInUI(false);
 
         public void OnLoad(UpdateSystem updateSystem)
         {
             log.Info(nameof(OnLoad));
+
+            updateSystem.UpdateAt<TooltipSystem>(SystemUpdatePhase.UIUpdate);
         }
 
         public void OnDispose()
