@@ -10,7 +10,7 @@ const GROUP = "DisableHover";
  * ✅ TRUE native-looking toggle (uses CS2 classes)
  */
 function NativeLikeToggle() {
-    const binding = bindValue<boolean>(GROUP, "GetTooltipsDisabled");
+    const binding = bindValue<boolean>(GROUP, "GetTooltipsEnabled");
     const [value, setValue] = React.useState(false);
 
     React.useEffect(() => {
@@ -20,7 +20,7 @@ function NativeLikeToggle() {
 
     const toggle = () => {
         const next = !value;
-        trigger(GROUP, "SetTooltipsDisabled", next);
+        trigger(GROUP, "SetTooltipsEnabled", next);
         setValue(next);
     };
 
@@ -72,7 +72,7 @@ const register: ModRegistrar = (moduleRegistry) => {
 
                                 // ✅ change label text
                                 const label = clone.querySelector("div[class*='label']");
-                                if (label) label.textContent = "Enable Tooltips";
+                                if (label) label.textContent = "Show Tooltips on Hover";
 
                                 // ❗ remove original toggle completely
                                 const originalRight = clone.lastElementChild as HTMLElement;

@@ -1,4 +1,4 @@
-import { setTooltipsDisabled, areTooltipsDisabled } from "../mods/tooltipBlocker";
+import { setTooltipsEnabled, areTooltipsEnabled } from "../mods/tooltipBlocker";
 
 /**
  * Find a settings row by visible label text
@@ -63,7 +63,7 @@ export function injectBelowWhatsNew() {
         toggle.style.pointerEvents = "auto";
 
         // ✅ Enabled = inverse of disabled
-        const enabled = !areTooltipsDisabled();
+        const enabled = !areTooltipsEnabled();
 
         updateToggleVisual(toggle, enabled);
 
@@ -71,11 +71,11 @@ export function injectBelowWhatsNew() {
             e.stopPropagation();
             e.preventDefault();
 
-            const currentEnabled = !areTooltipsDisabled();
+            const currentEnabled = !areTooltipsEnabled();
             const nextEnabled = !currentEnabled;
 
             // invert for storage
-            setTooltipsDisabled(!nextEnabled);
+            setTooltipsEnabled(!nextEnabled);
 
             updateToggleVisual(toggle, nextEnabled);
 

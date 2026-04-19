@@ -1,5 +1,5 @@
 import { trigger, bindValue } from "cs2/api";
-const STORAGE_KEY = "disablehover-tooltips-disabled";
+const STORAGE_KEY = "disablehover-tooltips-enabled";
 const GROUP = "DisableHover";
 let tooltipStyle: HTMLStyleElement | null = null;
 
@@ -12,28 +12,28 @@ const TOOLTIP_CSS = `
     }
 `;
 
-export function areTooltipsDisabled(): boolean {
+export function areTooltipsEnabled(): boolean {
     return localStorage.getItem(STORAGE_KEY) === "true";
 }
 
-export function setTooltipsDisabled(value: boolean): void {
+export function setTooltipsEnabled(value: boolean): void {
     localStorage.setItem(STORAGE_KEY, String(value));
 
     if (value) {
 
-        const binding = bindValue<boolean>(GROUP, "GetTooltipsDisabled");
+        const binding = bindValue<boolean>(GROUP, "GetTooltipsEnabled");
         binding.subscribe((value) => {
             console.log("[UI] Received value from C#:", value);
         });
-        trigger(GROUP, "SetTooltipsDisabled", value);
+        trigger(GROUP, "SetTooltipsEnabled", value);
 
         applyTooltipBlocker();
     } else {
-        const binding = bindValue<boolean>(GROUP, "GetTooltipsDisabled");
+        const binding = bindValue<boolean>(GROUP, "GetTooltipsEnabled");
         binding.subscribe((value) => {
             console.log("[UI] Received value from C#:", value);
         });
-        trigger(GROUP, "SetTooltipsDisabled", false);
+        trigger(GROUP, "SetTooltipsEnabled", false);
         removeTooltipBlocker();
     }
 }
@@ -60,7 +60,7 @@ export function removeTooltipBlocker(): void {
 
 export function initializeTooltipBlocker(): void {
     console.log("Initializing Tooltips")
-    if (areTooltipsDisabled()) {
+    if (areTooltipsEnabled()) {
         applyTooltipBlocker();
     } else {
         removeTooltipBlocker();

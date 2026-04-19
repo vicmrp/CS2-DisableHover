@@ -12,33 +12,33 @@ namespace DisableHover
             Mod.log.Info("[TooltipSystem] OnCreate");
 
             Settings.Load();
-            Mod.log.Info($"[TooltipSystem] Loaded value = {Settings.Data.tooltipsDisabled}");
+            Mod.log.Info($"[TooltipSystem] Loaded value = {Settings.Data.tooltipsEnabled}");
 
             AddBinding(new TriggerBinding<bool>(
                 "DisableHover",
-                "SetTooltipsDisabled",
-                SetTooltipsDisabled
+                "SetTooltipsEnabled",
+                SetTooltipsEnabled
             ));
 
             AddBinding(new GetterValueBinding<bool>(
                 "DisableHover",
-                "GetTooltipsDisabled",
+                "GetTooltipsEnabled",
                 () =>
                 {
-                    Mod.log.Info($"[TooltipSystem] GET → {Settings.Data.tooltipsDisabled}");
-                    return Settings.Data.tooltipsDisabled;
+                    Mod.log.Info($"[TooltipSystem] GET → {Settings.Data.tooltipsEnabled}");
+                    return Settings.Data.tooltipsEnabled;
                 }
             ));
         }
 
-        private void SetTooltipsDisabled(bool value)
+        private void SetTooltipsEnabled(bool value)
         {
             Mod.log.Info($"[TooltipSystem] SET ← {value}");
 
-            Settings.Data.tooltipsDisabled = value;
+            Settings.Data.tooltipsEnabled = value;
             Settings.Save();
 
-            Mod.log.Info($"[TooltipSystem] SAVED = {Settings.Data.tooltipsDisabled}");
+            Mod.log.Info($"[TooltipSystem] SAVED = {Settings.Data.tooltipsEnabled}");
         }
 
         protected override void OnUpdate() { }

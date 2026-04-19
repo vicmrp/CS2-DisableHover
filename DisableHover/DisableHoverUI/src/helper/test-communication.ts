@@ -6,7 +6,7 @@ export function testCommunication() {
     console.log("=== TESTING UI ↔ C# (LOOP) ===");
 
     try {
-        const binding = bindValue<boolean>(GROUP, "GetTooltipsDisabled");
+        const binding = bindValue<boolean>(GROUP, "GetTooltipsEnabled");
 
         binding.subscribe((value) => {
             console.log("[UI] Received value from C#:", value);
@@ -20,7 +20,7 @@ export function testCommunication() {
             state = !state;
 
             console.log("[UI] Sending:", state);
-            trigger(GROUP, "SetTooltipsDisabled", state);
+            trigger(GROUP, "SetTooltipsEnabled", state);
 
         }, 10000);
 

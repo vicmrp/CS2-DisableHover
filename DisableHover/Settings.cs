@@ -8,7 +8,7 @@ namespace DisableHover
     [Serializable]
     public class ConfigData
     {
-        public bool tooltipsDisabled = false;
+        public bool tooltipsEnabled = true;
     }
 
     public static class Settings
@@ -52,7 +52,7 @@ namespace DisableHover
 
                 Data = JsonConvert.DeserializeObject<ConfigData>(json) ?? new ConfigData();
 
-                Mod.log.Info($"[Settings] Parsed tooltipsDisabled = {Data.tooltipsDisabled}");
+                Mod.log.Info($"[Settings] Parsed tooltipsEnabled = {Data.tooltipsEnabled}");
             }
             catch (Exception ex)
             {
