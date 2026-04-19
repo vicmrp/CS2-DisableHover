@@ -5,9 +5,6 @@ namespace DisableHover
 {
     public partial class TooltipSystem : UISystemBase
     {
-
-        private ValueBinding<bool> _binding;
-
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -17,18 +14,20 @@ namespace DisableHover
             Settings.Load();
             Mod.log.Info($"[TooltipSystem] Loaded value = {Settings.Data.tooltipsEnabled}");
 
-            _binding = new ValueBinding<bool>(
-                "DisableHover",
-                "GetTooltipsEnabled",
-                Settings.Data.tooltipsEnabled
-            );
-
-            AddBinding(_binding);
-
             AddBinding(new TriggerBinding<bool>(
                 "DisableHover",
                 "SetTooltipsEnabled",
                 SetTooltipsEnabled
+            ));
+
+            AddBinding(new GetterValueBinding<bool>(
+                "DisableHover",
+                "GetTooltipsEnabled",
+                () =>
+                {
+                    Mod.log.Info($"[TooltipSystem] GET → {Settings.Data.tooltipsEnabled}");
+                    return Settings.Data.tooltipsEnabled;
+                }
             ));
         }
 
@@ -40,7 +39,6 @@ namespace DisableHover
             Settings.Save();
 
             Mod.log.Info($"[TooltipSystem] SAVED = {Settings.Data.tooltipsEnabled}");
-            _binding.Update(value);
         }
 
         protected override void OnUpdate() { }

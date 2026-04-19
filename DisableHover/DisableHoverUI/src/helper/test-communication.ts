@@ -22,7 +22,7 @@ export function testCommunication() {
             console.log("[UI] Sending:", state);
             trigger(GROUP, "SetTooltipsEnabled", state);
 
-        }, 10000);
+        }, 3000);
 
     } catch (e) {
         console.error("[UI] Communication FAILED:", e);

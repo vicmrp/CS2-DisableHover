@@ -1,4 +1,5 @@
 import { trigger, bindValue } from "cs2/api";
+const STORAGE_KEY = "disablehover-tooltips-enabled";
 const GROUP = "DisableHover";
 let tooltipStyle: HTMLStyleElement | null = null;
 
@@ -12,20 +13,31 @@ const TOOLTIP_CSS = `
 `;
 
 export function areTooltipsEnabled(): boolean {
-    const binding = bindValue<boolean>(GROUP, "GetTooltipsEnabled");
+    return localStorage.getItem(STORAGE_KEY) === "true";
+}
 
-    console.log("[UI] binding.value =", binding.value);
+export function setTooltipsEnabled(value: boolean): void {
+    localStorage.setItem(STORAGE_KEY, String(value));
 
-    if (binding.value === true) {
-        console.log("[UI] returning TRUE");
-        return true;
+    if (value) {
+
+        const binding = bindValue<boolean>(GROUP, "GetTooltipsEnabled");
+        binding.subscribe((value) => {
+            console.log("[UI] Received value from C#:", value);
+        });
+        trigger(GROUP, "SetTooltipsEnabled", value);
+
+        applyTooltipBlocker();
     } else {
-        console.log("[UI] returning FALSE");
-        return false;
+        const binding = bindValue<boolean>(GROUP, "GetTooltipsEnabled");
+        binding.subscribe((value) => {
+            console.log("[UI] Received value from C#:", value);
+        });
+        trigger(GROUP, "SetTooltipsEnabled", false);
+        removeTooltipBlocker();
     }
 }
 
-// block the tips
 export function applyTooltipBlocker(): void {
     if (tooltipStyle) return;
 
@@ -37,7 +49,6 @@ export function applyTooltipBlocker(): void {
     console.log("[DisableHover] Tooltip blocker enabled");
 }
 
-// remove the blocker - show the tips again
 export function removeTooltipBlocker(): void {
     if (!tooltipStyle) return;
 
@@ -49,9 +60,9 @@ export function removeTooltipBlocker(): void {
 
 export function initializeTooltipBlocker(): void {
     console.log("Initializing Tooltips")
-    if (areTooltipsEnabled()) {
-        removeTooltipBlocker();
-    } else {
-        applyTooltipBlocker();        
-    }
+    // if (areTooltipsEnabled()) {
+    //     applyTooltipBlocker();
+    // } else {
+    //     removeTooltipBlocker();
+    // }
 }
