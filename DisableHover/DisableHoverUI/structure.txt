@@ -1,0 +1,20 @@
+src/
+│
+├── index.tsx              # ONLY mod entry + registration
+│
+├── ui/
+│   └── TooltipToggle.tsx  # React component (pure UI)
+│
+├── features/
+│   └── tooltip/
+│       ├── tooltipService.ts   # apply/remove logic (CSS, state)
+│       ├── tooltipBinding.ts   # cs2/api bindings (Get/Set)
+│       └── tooltipInit.ts      # initialization logic
+│
+├── injection/
+│   └── injectToggle.ts    # DOM injection logic
+│
+├── dev/
+│   ├── logger.ts
+│   ├── inspect-element.ts
+│   └── test-communication.ts

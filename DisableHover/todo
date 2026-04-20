@@ -1,3 +1,8 @@
 Make a small gif how it works
 
-In the options menu -> interface the vanilla ticks gets checked and unchecked when clicked on the entire object. Mine only unchecks when i click on the tick itself
+C#:
+Make the safe config.json in the folder it is shipped in, if possible
+
+UI:
+1. In the options menu -> interface the vanilla ticks gets checked and unchecked when clicked on the entire object. Mine only unchecks when i click on the tick itself
+2. Make it work with any langauge. try to find a parent element to hook on to, but copy the style of one of the children

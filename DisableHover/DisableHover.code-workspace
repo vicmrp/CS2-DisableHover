@@ -1,0 +1,15 @@
+{
+    "folders": [
+        {
+            "name": "Backend (C#)",
+            "path": "."
+        },
+        {
+            "name": "UI (TypeScript)",
+            "path": "DisableHoverUI"
+        }
+    ],
+    "settings": {
+        "js/ts.tsdk.path": "Backend (C#)\\DisableHoverUI\\node_modules\\typescript\\lib"
+    }
+}
