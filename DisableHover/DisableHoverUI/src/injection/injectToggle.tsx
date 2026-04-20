@@ -2,45 +2,81 @@
 import { createRoot } from "react-dom/client";
 import { TooltipToggle } from "../ui/TooltipToggle";
 
+/**
+ * Known translations of "What's New"
+ */
+const WHATS_NEW_KEYS = [
+    "what's new", "whats new", // English
+    "neuigkeiten", // Deutsch
+    "novedades", // Espanol (spanish)
+    "nouveautés", "nouveautes", // French
+    "nowości", "nowosci", // Polski
+    "novidades", // Portugues
+    "что нового", // Russian
+    "新内容", "最新消息", // Chinese
+];
+
+/**
+ * Normalize + match text
+ */
+function isWhatsNewLabel(text: string): boolean {
+    const t = text.toLowerCase().trim();
+    return WHATS_NEW_KEYS.some(k => t.includes(k));
+}
+
 export function injectTooltipToggle() {
     let injected = false;
 
     const inject = () => {
         if (injected) return;
 
-        const labels = document.querySelectorAll("div");
+        const elements = document.querySelectorAll("div");
 
-        for (const el of labels) {
-            if (el.textContent?.includes("What's New")) {
+        for (const el of elements) {
+            const text = el.textContent;
+            if (!text) continue;
 
-                const row = el.closest("div[class*='field']");
-                if (!row) continue;
+            // 🔍 Language-safe detection
+            if (!isWhatsNewLabel(text)) continue;
 
-                if (row.nextElementSibling?.id === "tooltip-toggle-row") return;
+            const row = el.closest("div[class*='field']") as HTMLElement | null;
+            if (!row) continue;
 
-                const clone = row.cloneNode(true) as HTMLElement;
-                clone.id = "tooltip-toggle-row";
+            // Prevent duplicate injection
+            if (row.nextElementSibling?.id === "tooltip-toggle-row") return;
 
-                const label = clone.querySelector("div[class*='label']");
-                if (label) label.textContent = "Show Tooltips on Hover";
+            // Clone existing row
+            const clone = row.cloneNode(true) as HTMLElement;
+            clone.id = "tooltip-toggle-row";
 
-                clone.lastElementChild?.remove();
+            // Replace label text
+            const label = clone.querySelector("div[class*='label']");
+            if (label) label.textContent = "Show Tooltips on Hover";
 
-                const mount = document.createElement("div");
-                clone.appendChild(mount);
+            // Remove original control (toggle/checkbox/etc.)
+            clone.lastElementChild?.remove();
 
-                createRoot(mount).render(<TooltipToggle />);
+            // Mount React toggle
+            const mount = document.createElement("div");
+            clone.appendChild(mount);
 
-                row.parentElement?.insertBefore(clone, row.nextElementSibling);
+            createRoot(mount).render(<TooltipToggle />);
 
-                injected = true;
-                return;
-            }
+            // Insert into DOM
+            row.parentElement?.insertBefore(clone, row.nextElementSibling);
+
+            injected = true;
+            return;
         }
     };
 
+    // Initial run
     inject();
 
+    // Observe UI changes (CS2 UI is dynamic)
     const observer = new MutationObserver(inject);
-    observer.observe(document.body, { childList: true, subtree: true });
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
 }
