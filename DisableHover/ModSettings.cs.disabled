@@ -1,0 +1,26 @@
+using Game.Settings;
+using Game.Modding;
+using Colossal;
+using System.Collections.Generic;
+
+namespace DisableHover
+{
+    public class ModSettings : ModSetting
+    {
+        public const string Section = "Main";
+
+        public ModSettings(IMod mod) : base(mod)
+        {
+            SetDefaults();
+        }
+
+        [SettingsUISection(Section)]
+        [SettingsUIDescription(nameof(TooltipsEnabled))]
+        public bool TooltipsEnabled { get; set; }
+
+        public override void SetDefaults()
+        {
+            TooltipsEnabled = true;
+        }
+    }
+}

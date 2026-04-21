@@ -1,0 +1,32 @@
+using Colossal;
+using System.Collections.Generic;
+
+namespace DisableHover
+{
+    public class LocaleEN : IDictionarySource
+    {
+        private readonly Dictionary<string, string> _entries;
+
+        public LocaleEN(ModSettings settings)
+        {
+            _entries = new Dictionary<string, string>
+            {
+                { settings.GetSettingsLocaleID(), "Disable Hover" },
+
+                { settings.GetOptionGroupLocaleID(ModSettings.Section), "General" },
+
+                { settings.GetOptionLabelLocaleID(nameof(ModSettings.TooltipsEnabled)), "Show Tooltips on Hover" },
+                { settings.GetOptionDescLocaleID(nameof(ModSettings.TooltipsEnabled)), "Enable or disable hover tooltips in the game UI." }
+            };
+        }
+
+        public IEnumerable<KeyValuePair<string, string>> ReadEntries(
+            IList<IDictionaryEntryError> errors,
+            Dictionary<string, int> indexCounts
+        ) => _entries;
+
+        public void Unload()
+        {
+        }
+    }
+}

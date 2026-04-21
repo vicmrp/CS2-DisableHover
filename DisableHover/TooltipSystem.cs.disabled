@@ -1,0 +1,41 @@
+using Game.UI;
+using Colossal.UI.Binding;
+
+namespace DisableHover
+{
+    public partial class TooltipSystem : UISystemBase
+    {
+        private ValueBinding<bool> _binding;
+
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+
+            _binding = new ValueBinding<bool>(
+                "DisableHover",
+                "TooltipsEnabled",
+                Mod.Settings?.TooltipsEnabled ?? true
+            );
+
+            AddBinding(_binding);
+
+            AddBinding(new TriggerBinding<bool>(
+                "DisableHover",
+                "SetTooltipsEnabled",
+                value =>
+                {
+                    Mod.log.Info($"[TooltipSystem] SET ← {value}");
+
+                    Mod.Settings.TooltipsEnabled = value;
+                    Mod.Settings.ApplyAndSave();
+
+                    _binding.Update(value);
+                }
+            ));
+        }
+
+        protected override void OnUpdate()
+        {
+        }
+    }
+}

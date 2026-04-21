@@ -2,9 +2,22 @@
 
 	<PropertyGroup>
 		<Configurations>Debug;Release</Configurations>
-	
-		<!--The file where mod information which is required for publishing mod on PDX mods are stored-->
+		<TargetFramework>net48</TargetFramework>
+		
+		<!-- Publishing config -->
 		<PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
+	</PropertyGroup>
+
+	<!-- DEBUG build -->
+	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
+		<Optimize>false</Optimize>
+	</PropertyGroup>
+
+	<!-- RELEASE build -->
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<DefineConstants>TRACE</DefineConstants>
+		<Optimize>true</Optimize>
 	</PropertyGroup>
 	
 	<!--Imports must be after PropertyGroup block-->
@@ -67,9 +80,9 @@
 	</ItemGroup>
 
 
-	<Target Name="BuildUI" AfterTargets="AfterBuild">
+	<!-- <Target Name="BuildUI" AfterTargets="AfterBuild">
 		<Exec Command="npm run build" WorkingDirectory="$(ProjectDir)/DisableHoverUI" />
-	</Target>
+	</Target> -->
 
 
 </Project>
