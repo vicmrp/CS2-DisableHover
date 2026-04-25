@@ -2,17 +2,22 @@
 using Colossal.Logging;
 using Game;
 using Game.Modding;
+using Game.SceneFlow;
+using Game.Simulation;
 
 namespace DisableHover
 {
     public class Mod : IMod
     {
-        public static ILog log = LogManager
-            .GetLogger($"{nameof(DisableHover)}.{nameof(Mod)}")
-            .SetShowsErrorsInUI(false);
+        public static ILog log = LogManager.GetLogger($"{nameof(DisableHover)}.{nameof(Mod)}").SetShowsErrorsInUI(false);
+
+        public static Mod Instance { get; private set; }
+
+        internal ModSettings Settings { get; set; }
 
         public void OnLoad(UpdateSystem updateSystem)
         {
+            Instance = this;
             log.Info(nameof(OnLoad));
 #if VERBOSE
                 log.SetEffectiveness(Level.All);
@@ -26,7 +31,6 @@ namespace DisableHover
                 log.SetEffectiveness(Level.Info);
                 log.Info("=== BUILD MODE: RELEASE ===");
 #endif
-                        // Extra proof signals
 #if VERBOSE
                 log.Info("[VERBOSE] Extra noisy logging enabled");
 #endif
@@ -36,6 +40,22 @@ namespace DisableHover
 #if !DEBUG && !VERBOSE
                 log.Info("[RELEASE] Minimal logging");
 #endif
+
+        // // Inject custom systems.
+        // RegisterSystems(updateSystem);
+        // log.Info("Custom systems injected.");
+
+        // Register mod settings.
+        Settings = new ModSettings(this);
+        Settings.RegisterInOptionsUI();
+
+        // AssetDatabase.global.LoadSettings(nameof(ExtractorsBegone), Settings, new ModSettings(this));
+        // Settings.ApplySystemStates();
+        // log.Info("Settings loaded.");
+
+        GameManager.instance.localizationManager.AddSource("en-US", new ModSettingsDefaultLocale(Settings));
+        log.Info("Default locale loaded.");
+
         }
 
         public void OnDispose()
