@@ -1,0 +1,48 @@
+using Game.UI;
+using Colossal.UI.Binding;
+
+namespace DisableHover
+{
+    public partial class DisableHoverToolTips : UISystemBase
+    {
+
+        private ValueBinding<bool> _binding;
+
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+
+            Mod.log.Info("[DisableHoverToolTips] OnCreate");
+
+            Settings.Load();
+            Mod.log.Info($"[DisableHoverToolTips] Loaded value = {Settings.Data.tooltipsEnabled}");
+
+            _binding = new ValueBinding<bool>(
+                "DisableHover",
+                "GetTooltipsEnabled",
+                Settings.Data.tooltipsEnabled
+            );
+
+            AddBinding(_binding);
+
+            AddBinding(new TriggerBinding<bool>(
+                "DisableHover",
+                "SetTooltipsEnabled",
+                SetTooltipsEnabled
+            ));
+        }
+
+        private void SetTooltipsEnabled(bool value)
+        {
+            Mod.log.Info($"[DisableHoverToolTips] SET ← {value}");
+
+            Settings.Data.tooltipsEnabled = value;
+            Settings.Save();
+
+            Mod.log.Info($"[DisableHoverToolTips] SAVED = {Settings.Data.tooltipsEnabled}");
+            _binding.Update(value);
+        }
+
+        protected override void OnUpdate() { }
+    }
+}

@@ -1,22 +1,16 @@
 import { ModRegistrar } from "cs2/modding";
 import { enableDeepInspector, inspectElement, inspectWithParents } from "dev/inspect-element";
-import { injectTooltipToggle } from "injection/injectToggle";
-
+import { useTooltipBinding } from "features/tooltip/tooltipBinding";
+import { initializeTooltip } from "features/tooltip/tooltipInit"
 
 const register: ModRegistrar = (moduleRegistry) => {
-    enableDeepInspector()
     
+    // enableDeepInspector()
+    // useTooltipBinding()
 
-    moduleRegistry.extend(
-        "game-ui/menu/components/options-screen/option-page/option-page.tsx",
-        "OptionPage",
-        (Component) => {
-            return (props) => {
-                injectTooltipToggle(); // handles observer + DOM logic
-                return <Component {...props} />;
-            };
-        }
-    );
+    // check if the tooltip is enabled on start
+    initializeTooltip()
+
 };
 
 export default register;

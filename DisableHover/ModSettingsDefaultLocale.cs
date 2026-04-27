@@ -16,13 +16,17 @@ namespace DisableHover
 
         public void Unload()
         {
+            
         }
 
         private static Dictionary<string, string> LoadSettingsLocale(ModSettings settings)
         {
             return new Dictionary<string, string>
             {
-                { settings.GetSettingsLocaleID(), "Victor Settings" },
+                { settings.GetSettingsLocaleID(), "Victor's Toolbox" },
+                { settings.GetOptionGroupLocaleID(ModSettings.MainGroup), "My First Group" },
+                { settings.GetOptionLabelLocaleID(nameof(ModSettings.DisableUIToolTips)), "Disable UI tooltips" },
+                { settings.GetOptionDescLocaleID(nameof(ModSettings.DisableUIToolTips)), "Disables annoying and distacting UI tooltips." },
             };
         }
     }

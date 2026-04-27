@@ -2,14 +2,17 @@ using Colossal.IO.AssetDatabase;
 using Game.Modding;
 using Game.Settings;
 
-
 namespace DisableHover
 {
     [FileLocation("ModsSettings/DisableHover/DisableHover")]
     [SettingsUIShowGroupName(MainGroup)]
     public sealed class ModSettings : ModSetting
     {
-        public const string MainGroup = "General";
+        public const string MainGroup = "My First Group";
+
+        [SettingsUISection(MainGroup)]
+        [SettingsUISetter(typeof(ModSettings), nameof(ToggleDisableUIToolTips))]
+        public bool DisableUIToolTips { get; set; }
 
         public ModSettings(IMod mod) : base(mod)
         {
@@ -20,19 +23,10 @@ namespace DisableHover
         {
         }
 
-        // 👇 This creates a button in the UI
-        [SettingsUIButtonGroup(MainGroup)]
-        [SettingsUIButton]
-        public bool DummyButton
+        private void ToggleDisableUIToolTips(bool disabled)
         {
-            set => OnDummyPressed(value);
-        }
-
-        private void OnDummyPressed(bool pressed)
-        {
-            if (!pressed) return;
-
-            Mod.log.Info("=== DUMMY BUTTON CLICKED ===");
+            Mod.log.Info($"button clicked! Disabled state: {disabled}");
+            TooltipSystem.SetTooltipsEnabled(disabled);
         }
     }
 }

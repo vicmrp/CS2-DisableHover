@@ -52,7 +52,8 @@ namespace DisableHover
         // AssetDatabase.global.LoadSettings(nameof(ExtractorsBegone), Settings, new ModSettings(this));
         // Settings.ApplySystemStates();
         // log.Info("Settings loaded.");
-
+        updateSystem.UpdateAt<TooltipSystem>(SystemUpdatePhase.UIUpdate);
+        
         GameManager.instance.localizationManager.AddSource("en-US", new ModSettingsDefaultLocale(Settings));
         log.Info("Default locale loaded.");
 
