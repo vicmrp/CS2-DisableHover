@@ -9,8 +9,8 @@ export function initializeTooltip() {
 
     console.log("[initializeTooltip] getDisableUIToolTips: ", getDisableUIToolTips.value);
     if (getDisableUIToolTips.value === true) {        
-        removeTooltipBlocker();
-    } else {        
         applyTooltipBlocker();
+    } else {        
+        removeTooltipBlocker();
     }
 }
