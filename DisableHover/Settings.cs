@@ -72,7 +72,7 @@ namespace DisableHover
 
                 File.WriteAllText(FilePath, json);
 
-                Mod.log.Info($"[Settings] Saved JSON:\n{json}");
+                Mod.log.Info($"[Settings] Saved JSON");
             }
             catch (Exception ex)
             {

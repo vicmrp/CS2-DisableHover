@@ -26,12 +26,7 @@ namespace DisableHover
 
             AddBinding(_binding);
 
-            
-            // AddBinding(new TriggerBinding<bool>(
-            //     "DisableHover",
-            //     "SetTooltipsEnabled",
-            //     SetTooltipsEnabled
-            // ));
+            // _binding.Update(Settings.Data.tooltipsEnabled);
         }
 
         public static void SetTooltipsEnabled(bool value)

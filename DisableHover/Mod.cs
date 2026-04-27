@@ -41,17 +41,10 @@ namespace DisableHover
                 log.Info("[RELEASE] Minimal logging");
 #endif
 
-        // // Inject custom systems.
-        // RegisterSystems(updateSystem);
-        // log.Info("Custom systems injected.");
-
         // Register mod settings.
         Settings = new ModSettings(this);
         Settings.RegisterInOptionsUI();
-
-        // AssetDatabase.global.LoadSettings(nameof(ExtractorsBegone), Settings, new ModSettings(this));
-        // Settings.ApplySystemStates();
-        // log.Info("Settings loaded.");
+        
         updateSystem.UpdateAt<TooltipSystem>(SystemUpdatePhase.UIUpdate);
         
         GameManager.instance.localizationManager.AddSource("en-US", new ModSettingsDefaultLocale(Settings));
