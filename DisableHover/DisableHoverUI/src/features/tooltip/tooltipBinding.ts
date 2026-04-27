@@ -4,17 +4,17 @@ import { applyTooltipBlocker, removeTooltipBlocker } from "features/tooltip/tool
 const GROUP = "DisableHover";
 
 export function listenTooltipChanges() {
-    const binding = bindValue<boolean>(GROUP, "GetTooltipsEnabled");
+    const getTooltipsEnabled = bindValue<boolean>(GROUP, "GetTooltipsEnabled");
 
-    binding.subscribe((value) => {
+    getTooltipsEnabled.subscribe((value) => {
         console.log("[UI] C# updated value →", value);
     });
 
-    if (binding.value) {
+    if (getTooltipsEnabled.value) {
+        console.log("[UI] C# applying tooltip blocker");        
         applyTooltipBlocker()
     } else {
+        console.log("[UI] C# removing tooltip blocker");
         removeTooltipBlocker()
     }
-
-    console.log("[UI] Initial value →", binding.value);
 }
