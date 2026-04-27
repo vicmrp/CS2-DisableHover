@@ -25,10 +25,6 @@ namespace vezit.DisableHover
             this.DisableUIToolTips = false;
         }
 
-        public void ApplySystemStates()
-        {
-            
-        }
 
         private void ToggleDisableUIToolTips(bool disabled)
         {

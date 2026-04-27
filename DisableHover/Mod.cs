@@ -44,7 +44,6 @@ namespace vezit.DisableHover
             Settings.RegisterInOptionsUI();
 
             AssetDatabase.global.LoadSettings(nameof(DisableHover), Settings, new ModSettings(this));
-            Settings.ApplySystemStates();
             log.Info("Settings loaded.");
             
             updateSystem.UpdateAt<TooltipSystem>(SystemUpdatePhase.UIUpdate);
