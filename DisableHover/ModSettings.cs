@@ -22,7 +22,7 @@ namespace vezit.DisableHover
 
         public override void SetDefaults()
         {
-            this.DisableUIToolTips = true;
+            this.DisableUIToolTips = false;
         }
 
         public void ApplySystemStates()
@@ -30,11 +30,10 @@ namespace vezit.DisableHover
             
         }
 
-
         private void ToggleDisableUIToolTips(bool disabled)
         {
             Mod.log.Info($"button clicked! Disabled state: {disabled}");
-            // TooltipSystem.SetTooltipsEnabled(disabled);
+            TooltipSystem.SetTooltipsEnabled(disabled);
         }
     }
 }

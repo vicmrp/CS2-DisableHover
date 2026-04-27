@@ -39,7 +39,6 @@ namespace vezit.DisableHover
 #if !DEBUG && !VERBOSE
             log.Info("[RELEASE] Minimal logging");
 #endif
-
             // Register mod settings.
             Settings = new ModSettings(this);
             Settings.RegisterInOptionsUI();
@@ -48,7 +47,7 @@ namespace vezit.DisableHover
             Settings.ApplySystemStates();
             log.Info("Settings loaded.");
             
-            // updateSystem.UpdateAt<TooltipSystem>(SystemUpdatePhase.UIUpdate);
+            updateSystem.UpdateAt<TooltipSystem>(SystemUpdatePhase.UIUpdate);
             
             GameManager.instance.localizationManager.AddSource("en-US", new ModSettingsDefaultLocale(Settings));
             log.Info("Default locale loaded.");

@@ -14,29 +14,25 @@ namespace vezit.DisableHover
 
             Mod.log.Info("[TooltipSystem] OnCreate");
 
-            // Settings.Load();
-            Mod.log.Info($"[TooltipSystem] Loaded value = {Settings.Data.tooltipsEnabled}");
-
             // This sends the signal to UI
             _binding = new ValueBinding<bool>(
                 "DisableHover",
-                "GetTooltipsEnabled",
-                Settings.Data.tooltipsEnabled
-            );;
+                "GetDisableUIToolTips",
+                Mod.Instance.Settings.DisableUIToolTips
+            );
 
             AddBinding(_binding);
-
-            // _binding.Update(Settings.Data.tooltipsEnabled);
         }
 
         public static void SetTooltipsEnabled(bool value)
         {
             Mod.log.Info($"[TooltipSystem] SET ← {value}");
 
-            Settings.Data.tooltipsEnabled = value;
-            Settings.Save();
+            var settings = Mod.Instance.Settings;
 
-            Mod.log.Info($"[TooltipSystem] SAVED = {Settings.Data.tooltipsEnabled}");
+            settings.DisableUIToolTips = value;
+            settings.ApplyAndSave();
+
             if (_binding != null)
             {
                 _binding.Update(value);

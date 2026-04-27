@@ -5,12 +5,12 @@ import { applyTooltipBlocker, removeTooltipBlocker } from "./tooltipService";
 const GROUP = "DisableHover";
 
 export function initializeTooltip() {
-    const getTooltipsEnabled = bindValue<boolean>(GROUP, "GetTooltipsEnabled");
+    const getDisableUIToolTips = bindValue<boolean>(GROUP, "GetDisableUIToolTips");
 
-    console.log("[initializeTooltip] getTooltipsEnabled: ", getTooltipsEnabled.value);
-    if (getTooltipsEnabled.value) {        
+    console.log("[initializeTooltip] getDisableUIToolTips: ", getDisableUIToolTips.value);
+    if (getDisableUIToolTips.value === true) {        
         removeTooltipBlocker();
-    } else {
+    } else {        
         applyTooltipBlocker();
     }
 }

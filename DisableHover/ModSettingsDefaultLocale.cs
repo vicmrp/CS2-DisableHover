@@ -25,7 +25,7 @@ namespace vezit.DisableHover
             {
                 { settings.GetSettingsLocaleID(), "Victor's Toolbox" },
                 { settings.GetOptionGroupLocaleID(ModSettings.MainGroup), "My First Group" },
-                { settings.GetOptionLabelLocaleID(nameof(ModSettings.DisableUIToolTips)), "Show Tooltips on Hover" },
+                { settings.GetOptionLabelLocaleID(nameof(ModSettings.DisableUIToolTips)), "Disable Tooltips" },
                 { settings.GetOptionDescLocaleID(nameof(ModSettings.DisableUIToolTips)), "Disables annoying and distacting UI tooltips." },
             };
         }
