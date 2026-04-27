@@ -23,10 +23,10 @@ namespace vezit.DisableHover
         {
             return new Dictionary<string, string>
             {
-                { settings.GetSettingsLocaleID(), "Victor's Toolbox" },
-                { settings.GetOptionGroupLocaleID(ModSettings.MainGroup), "My First Group" },
+                { settings.GetSettingsLocaleID(), "DisableHover" },
+                { settings.GetOptionGroupLocaleID(ModSettings.MainGroup), "DisableHover" },
                 { settings.GetOptionLabelLocaleID(nameof(ModSettings.DisableUIToolTips)), "Disable Tooltips" },
-                { settings.GetOptionDescLocaleID(nameof(ModSettings.DisableUIToolTips)), "Disables annoying and distacting UI tooltips." },
+                { settings.GetOptionDescLocaleID(nameof(ModSettings.DisableUIToolTips)), "Disables annoying and distracting UI tooltips." },
             };
         }
     }
