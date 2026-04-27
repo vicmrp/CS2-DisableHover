@@ -4,7 +4,8 @@ using Game.Settings;
 
 namespace vezit.DisableHover
 {
-    [FileLocation("ModsSettings/DisableHover/DisableHover")]
+    // using Systems;
+    [FileLocation("ModsSettings/" + nameof(DisableHover) + "/" + nameof(DisableHover))]
     [SettingsUIShowGroupName(MainGroup)]
     public sealed class ModSettings : ModSetting
     {
@@ -16,17 +17,24 @@ namespace vezit.DisableHover
 
         public ModSettings(IMod mod) : base(mod)
         {
-            SetDefaults();
+            this.SetDefaults();
         }
 
         public override void SetDefaults()
         {
+            this.DisableUIToolTips = true;
         }
+
+        public void ApplySystemStates()
+        {
+            
+        }
+
 
         private void ToggleDisableUIToolTips(bool disabled)
         {
             Mod.log.Info($"button clicked! Disabled state: {disabled}");
-            TooltipSystem.SetTooltipsEnabled(disabled);
+            // TooltipSystem.SetTooltipsEnabled(disabled);
         }
     }
 }

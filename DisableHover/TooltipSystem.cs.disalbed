@@ -14,7 +14,7 @@ namespace vezit.DisableHover
 
             Mod.log.Info("[TooltipSystem] OnCreate");
 
-            Settings.Load();
+            // Settings.Load();
             Mod.log.Info($"[TooltipSystem] Loaded value = {Settings.Data.tooltipsEnabled}");
 
             // This sends the signal to UI

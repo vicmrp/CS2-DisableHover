@@ -3,7 +3,6 @@ using Colossal.Logging;
 using Game;
 using Game.Modding;
 using Game.SceneFlow;
-using Game.Simulation;
 
 namespace vezit.DisableHover
 {
@@ -20,36 +19,39 @@ namespace vezit.DisableHover
             Instance = this;
             log.Info(nameof(OnLoad));
 #if VERBOSE
-                log.SetEffectiveness(Level.All);
-                log.SetShowsErrorsInUI(true);
-                log.Info("=== BUILD MODE: VERBOSE ===");
+            log.SetEffectiveness(Level.All);
+            log.SetShowsErrorsInUI(true);
+            log.Info("=== BUILD MODE: VERBOSE ===");
 #elif DEBUG
-                        log.SetEffectiveness(Level.Debug);
-                        log.SetShowsErrorsInUI(true);
-                        log.Info("=== BUILD MODE: DEBUG ===");
+            log.SetEffectiveness(Level.Debug);
+            log.SetShowsErrorsInUI(true);
+            log.Info("=== BUILD MODE: DEBUG ===");
 #else
-                log.SetEffectiveness(Level.Info);
-                log.Info("=== BUILD MODE: RELEASE ===");
+            log.SetEffectiveness(Level.Info);
+            log.Info("=== BUILD MODE: RELEASE ===");
 #endif
 #if VERBOSE
-                log.Info("[VERBOSE] Extra noisy logging enabled");
+            log.Info("[VERBOSE] Extra noisy logging enabled");
 #endif
 #if DEBUG
-                        log.Debug("[DEBUG] Debug-level message visible only in DEBUG/VERBOSE");
+            log.Debug("[DEBUG] Debug-level message visible only in DEBUG/VERBOSE");
 #endif
 #if !DEBUG && !VERBOSE
-                log.Info("[RELEASE] Minimal logging");
+            log.Info("[RELEASE] Minimal logging");
 #endif
 
-        // Register mod settings.
-        Settings = new ModSettings(this);
-        Settings.RegisterInOptionsUI();
-        
-        updateSystem.UpdateAt<TooltipSystem>(SystemUpdatePhase.UIUpdate);
-        
-        GameManager.instance.localizationManager.AddSource("en-US", new ModSettingsDefaultLocale(Settings));
-        log.Info("Default locale loaded.");
+            // Register mod settings.
+            Settings = new ModSettings(this);
+            Settings.RegisterInOptionsUI();
 
+            AssetDatabase.global.LoadSettings(nameof(DisableHover), Settings, new ModSettings(this));
+            Settings.ApplySystemStates();
+            log.Info("Settings loaded.");
+            
+            // updateSystem.UpdateAt<TooltipSystem>(SystemUpdatePhase.UIUpdate);
+            
+            GameManager.instance.localizationManager.AddSource("en-US", new ModSettingsDefaultLocale(Settings));
+            log.Info("Default locale loaded.");
         }
 
         public void OnDispose()
