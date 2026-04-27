@@ -1,7 +1,7 @@
 using Game.UI;
 using Colossal.UI.Binding;
 
-namespace DisableHover
+namespace vezit.DisableHover
 {
     public partial class TooltipSystem : UISystemBase
     {

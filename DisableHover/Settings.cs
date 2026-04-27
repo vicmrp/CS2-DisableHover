@@ -3,7 +3,7 @@ using System.IO;
 using UnityEngine;
 using Newtonsoft.Json;
 
-namespace DisableHover
+namespace vezit.DisableHover
 {
     [Serializable]
     public class ConfigData

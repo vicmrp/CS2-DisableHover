@@ -2,7 +2,7 @@ using Colossal.IO.AssetDatabase;
 using Game.Modding;
 using Game.Settings;
 
-namespace DisableHover
+namespace vezit.DisableHover
 {
     [FileLocation("ModsSettings/DisableHover/DisableHover")]
     [SettingsUIShowGroupName(MainGroup)]

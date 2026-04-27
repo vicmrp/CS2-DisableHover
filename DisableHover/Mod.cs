@@ -5,7 +5,7 @@ using Game.Modding;
 using Game.SceneFlow;
 using Game.Simulation;
 
-namespace DisableHover
+namespace vezit.DisableHover
 {
     public class Mod : IMod
     {
