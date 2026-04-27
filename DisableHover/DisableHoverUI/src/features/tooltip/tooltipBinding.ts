@@ -1,22 +1,20 @@
-// features/tooltip/tooltipBinding.ts
-import { bindValue, trigger } from "cs2/api";
-import React from "react";
+import { bindValue } from "cs2/api";
+import { applyTooltipBlocker, removeTooltipBlocker } from "features/tooltip/tooltipService";
 
 const GROUP = "DisableHover";
 
-export function useTooltipBinding(): [boolean, (v: boolean) => void] {
+export function listenTooltipChanges() {
     const binding = bindValue<boolean>(GROUP, "GetTooltipsEnabled");
-    const [value, setValue] = React.useState(binding.value);
 
-    React.useEffect(() => {
-        const sub = binding.subscribe(setValue);
-        return () => sub.dispose();
-    }, []);
+    binding.subscribe((value) => {
+        console.log("[UI] C# updated value →", value);
+    });
 
-    const update = (v: boolean) => {
-        trigger(GROUP, "SetTooltipsEnabled", v);
-        setValue(v);
-    };
+    if (binding.value) {
+        applyTooltipBlocker()
+    } else {
+        removeTooltipBlocker()
+    }
 
-    return [value, update];
+    console.log("[UI] Initial value →", binding.value);
 }

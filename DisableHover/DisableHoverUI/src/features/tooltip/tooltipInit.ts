@@ -6,8 +6,8 @@ const GROUP = "DisableHover";
 
 export function initializeTooltip() {
     const binding = bindValue<boolean>(GROUP, "GetTooltipsEnabled");
-
-    if (binding.value) {
+    console.log("[initializeTooltip]");
+    if (binding.value) {        
         removeTooltipBlocker();
     } else {
         applyTooltipBlocker();
