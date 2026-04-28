@@ -1,13 +1,3 @@
-.vs
-DisableHover/bin
-DisableHover/Library
-DisableHover/obj
-DisableHover/Properties
-DisableHover/DisableHoverUI/node_modules
-DisableHover/DisableHoverUI/package.json
-DisableHover/DisableHoverUI/package-lock.json
-DisableHover/DisableHoverUI/mod.json
-DisableHover/DisableHoverUI/types
-DisableHover/DisableHoverUI/tools
-DisableHover/DisableHoverUI/tsconfig.json
-DisableHover/DisableHoverUI/webpack.config.js
+DisableHoverUI/node_modules
+DisableHoverUI/tools
+

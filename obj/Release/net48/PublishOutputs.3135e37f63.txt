@@ -1,0 +1,3 @@
+C:\Users\victo\source\repos\DisableHover\DisableHover\bin\Release\net48\DisableHover.dll
+C:\Users\victo\source\repos\DisableHover\DisableHover\bin\Release\net48\DisableHover.pdb
+C:\Users\victo\source\repos\DisableHover\DisableHover\bin\Release\net48\Newtonsoft.Json.dll
