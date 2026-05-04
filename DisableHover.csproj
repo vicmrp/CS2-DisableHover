@@ -84,7 +84,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CS2-ModdingTools" Version="1.0.5" />
+	  <PackageReference Include="Lib.Harmony" Version="2.4.2" />
 	</ItemGroup>
 
 	<Target Name="BuildUI" AfterTargets="AfterBuild">

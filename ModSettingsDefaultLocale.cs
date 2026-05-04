@@ -1,7 +1,7 @@
 using Colossal;
 using System.Collections.Generic;
 
-namespace vezit.DisableHover
+namespace DisableHover
 {
     public class ModSettingsDefaultLocale : IDictionarySource
     {
@@ -25,8 +25,12 @@ namespace vezit.DisableHover
             {
                 { settings.GetSettingsLocaleID(), "DisableHover" },
                 { settings.GetOptionGroupLocaleID(ModSettings.MainGroup), "DisableHover" },
+
                 { settings.GetOptionLabelLocaleID(nameof(ModSettings.DisableUIToolTips)), "Disable Tooltips" },
                 { settings.GetOptionDescLocaleID(nameof(ModSettings.DisableUIToolTips)), "Disables annoying and distracting UI tooltips." },
+                
+                { settings.GetOptionLabelLocaleID(nameof(ModSettings.DisableBlueHighLightOnBuildings)), "Disable Blue Highligths" },
+                { settings.GetOptionDescLocaleID(nameof(ModSettings.DisableBlueHighLightOnBuildings)), "When this is enabled, all items that normally are marked blue, will no longer be marked anything." },
             };
         }
     }

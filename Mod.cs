@@ -3,8 +3,10 @@ using Colossal.Logging;
 using Game;
 using Game.Modding;
 using Game.SceneFlow;
+using HarmonyLib;
+using System.Reflection;
 
-namespace vezit.DisableHover
+namespace DisableHover
 {
     public class Mod : IMod
     {
@@ -50,6 +52,15 @@ namespace vezit.DisableHover
             
             GameManager.instance.localizationManager.AddSource("en-US", new ModSettingsDefaultLocale(Settings));
             log.Info("Default locale loaded.");
+
+
+            // var harmony = new Harmony("NoTileUpkeep");
+            // harmony.PatchAll(Assembly.GetExecutingAssembly());
+
+            var harmony = new Harmony("DisableHover");
+            harmony.PatchAll(Assembly.GetExecutingAssembly());
+            log.Info("Harmony patches applied");
+
         }
 
         public void OnDispose()

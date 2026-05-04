@@ -1,6 +1,6 @@
 ﻿<Publish>
 	<!--Id must be set in order to update existed mod. it is not required for publishing mod for the first time-->
-	<ModId Value="" />
+	<ModId Value="141603" />
 	<!--Name of the mod to display to players-->
 	<DisplayName Value="DisableHover" />
 	<!--Short description of the mod-->
@@ -10,16 +10,9 @@
 	<LongDescription>
 This mod adds a toggle button under:
 
-Options → Interface
+Options → Disablehover
 
 The toggle disables tooltips, hints, and UI explanations.
-
-⚠️ Notes:
-- Currently requires the game to be set to English
-- UI injection is based on text matching ("What's New")
-
-Source:
-https://github.com/vicmrp/CS2-DisableHover
 	</LongDescription>
 	<!--Thumbnail-->
 	<Thumbnail Value="Properties/Thumbnail.png" />
@@ -30,7 +23,7 @@ https://github.com/vicmrp/CS2-DisableHover
 	<!--Link to the forum post where the mod can be discussed-->
 	<ForumLink Value="" />
 	<!--Version of the mod-->
-	<ModVersion Value="1.0" />
+	<ModVersion Value="1.1" />
 	<!--Recommended version of the base game to use the mod-->
 	<GameVersion Value="1.*" />
 	<!--Dependency for the mod, can be set multiple times-->
@@ -38,7 +31,7 @@ https://github.com/vicmrp/CS2-DisableHover
 	<!--Required DLC, can be set multiple times. Supported values are "Landmark Buildings", "San Fransisco Set", "Beach Properties", "Urban Promenades", "Modern Architecture"-->
 	<RequiredDLC Value="" />
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-	<ChangeLog Value="" />
+	<ChangeLog Value="Code cleanup and performance improvements. No new features." />
 	<!--<ChangeLog>
 	</ChangeLog>-->
 	<!--External link, can be set multiple times. supported types are "discord", "github", "youtube", "twitch", "x", "paypal", "patreon", "buymeacoffee", "kofi", "crowdin", "gitlab", "gofundme"-->

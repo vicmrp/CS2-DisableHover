@@ -66,3 +66,33 @@ export function enableDeepInspector() {
 
     console.log("[Inspector] Deep inspector enabled");
 }
+
+
+
+const HOVER_THROTTLE_MS = 100; // prevent spam
+
+export function enableDeepInspectOnHover() {
+    let lastTime = 0;
+
+    window.addEventListener(
+        "mousemove",
+        (e) => {
+            const now = performance.now();
+            if (now - lastTime < HOVER_THROTTLE_MS) return;
+            lastTime = now;
+
+            const el = document.elementFromPoint(
+                e.clientX,
+                e.clientY
+            ) as HTMLElement;
+
+            if (!el) return;
+
+            console.log("========== HOVER ==========");
+            inspectWithParents(el);
+        },
+        true
+    );
+
+    console.log("[Inspector] Deep hover inspector enabled");
+}

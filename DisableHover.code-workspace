@@ -10,6 +10,7 @@
         }
     ],
     "settings": {
-        "js/ts.tsdk.path": "Backend (C#)\\DisableHoverUI\\node_modules\\typescript\\lib"
+        "js/ts.tsdk.path": "Backend (C#)\\DisableHoverUI\\node_modules\\typescript\\lib",
+        "workbench.colorTheme": "Tokyo Night"
     }
 }
