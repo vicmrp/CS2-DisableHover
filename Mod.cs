@@ -12,6 +12,8 @@ namespace DisableHover
     {
         public static ILog log = LogManager.GetLogger($"{nameof(DisableHover)}.{nameof(Mod)}").SetShowsErrorsInUI(false);
 
+        public static bool DisableBlueHighlight = false;
+        
         public static Mod Instance { get; private set; }
 
         internal ModSettings Settings { get; set; }
@@ -60,6 +62,8 @@ namespace DisableHover
             var harmony = new Harmony("DisableHover");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
             log.Info("Harmony patches applied");
+
+            
 
         }
 

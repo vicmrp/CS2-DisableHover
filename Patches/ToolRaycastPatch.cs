@@ -1,10 +1,6 @@
 using HarmonyLib;
 using Game.Tools;
-using Game;
 using Game.Common;
-using Unity.Entities;
-using Game.Simulation;
-
 
 namespace DisableHover.Patches
 {
@@ -13,10 +9,17 @@ namespace DisableHover.Patches
     {
         static bool Prefix(ref bool __result, out RaycastResult result)
         {
-            result = default;   // no hit data
-            __result = false;   // method returns false
+            // ALWAYS assign out parameter first
+            result = default;
 
-            return false;       // skip original
+            // If feature is OFF → run original game code
+            if (!Mod.DisableBlueHighlight)
+                return true;
+
+            // If feature is ON → block raycast
+            __result = false;
+
+            return false; // skip original
         }
     }
 }

@@ -18,7 +18,7 @@ namespace DisableHover
         [SettingsUISection(MainGroup)]
         [SettingsUISetter(typeof(ModSettings), nameof(ToggleDisableBlueHighLightOnBuildings))]
         public bool DisableBlueHighLightOnBuildings { get; set; }
- 
+
         public ModSettings(IMod mod) : base(mod)
         {
             SetDefaults();
@@ -38,7 +38,16 @@ namespace DisableHover
 
         private void ToggleDisableBlueHighLightOnBuildings(bool disabled)
         {
-            Mod.log.Info($"DisableBlueHighLightOnBuildings button clicked! Disabled state: {disabled}");
+            Mod.log.Info($"DisableBlueHighLightOnBuildings: {disabled}");
+
+            DisableBlueHighLightOnBuildings = disabled;
+            Mod.DisableBlueHighlight = disabled;
+
+            
         }
+
+
+
+
     }
 }
