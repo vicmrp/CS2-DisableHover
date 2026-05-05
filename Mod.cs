@@ -3,8 +3,10 @@ using Colossal.Logging;
 using Game;
 using Game.Modding;
 using Game.SceneFlow;
+using Game.Vehicles;
 using HarmonyLib;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace DisableHover
 {
@@ -13,7 +15,7 @@ namespace DisableHover
         public static ILog log = LogManager.GetLogger($"{nameof(DisableHover)}.{nameof(Mod)}").SetShowsErrorsInUI(false);
 
         public static bool DisableBlueHighlight = false;
-        
+
         public static Mod Instance { get; private set; }
 
         internal ModSettings Settings { get; set; }
@@ -63,7 +65,9 @@ namespace DisableHover
             harmony.PatchAll(Assembly.GetExecutingAssembly());
             log.Info("Harmony patches applied");
 
-            
+
+            DisableBlueHighlight = Instance.Settings.DisableBlueHighLightOnBuildings;
+           
 
         }
 

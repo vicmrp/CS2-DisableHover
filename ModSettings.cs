@@ -41,13 +41,15 @@ namespace DisableHover
             Mod.log.Info($"DisableBlueHighLightOnBuildings: {disabled}");
 
             DisableBlueHighLightOnBuildings = disabled;
+
+            var settings = Mod.Instance.Settings;
+            settings.DisableBlueHighLightOnBuildings = disabled;
+            settings.ApplyAndSave();
+
+
             Mod.DisableBlueHighlight = disabled;
-
             
+
         }
-
-
-
-
     }
 }
