@@ -46,10 +46,7 @@ namespace DisableHover
             settings.DisableBlueHighLightOnBuildings = disabled;
             settings.ApplyAndSave();
 
-
             Mod.DisableBlueHighlight = disabled;
-            
-
         }
     }
 }

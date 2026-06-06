@@ -1,0 +1,53 @@
+using HarmonyLib;
+using Game.Tools;
+using Game.Common;
+using Unity.Entities;
+using Game.Buildings;
+
+namespace DisableHover.Patches
+{
+    [HarmonyPatch(typeof(ToolRaycastSystem), nameof(ToolRaycastSystem.GetRaycastResult))]
+    public static class ToolRaycastPatch
+    {
+        static void Postfix(ref bool __result, ref RaycastResult result)
+        {
+            if (!Mod.DisableBlueHighlight)
+                return;
+
+            if (!__result)
+                return;
+
+            // ✅ Correct entity
+            var entity = result.m_Hit.m_HitEntity;
+
+            if (IsBuilding(entity))
+            {
+                __result = false;
+                result = default;
+            }
+        }
+
+        private static bool IsBuildingOrPartOfBuilding(Entity entity)
+        {
+            if (entity == Entity.Null)
+                return false;
+
+            var em = World.DefaultGameObjectInjectionWorld.EntityManager;
+
+            // Direct building
+            if (em.HasComponent<Building>(entity))
+                return true;
+
+            // 🔑 Check owner chain
+            if (em.HasComponent<Game.Common.Owner>(entity))
+            {
+                var owner = em.GetComponentData<Game.Common.Owner>(entity).m_Owner;
+
+                if (owner != Entity.Null && em.HasComponent<Building>(owner))
+                    return true;
+            }
+
+            return false;
+        }
+    }
+}

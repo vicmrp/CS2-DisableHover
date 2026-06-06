@@ -4,6 +4,7 @@ using Game.Input;
 using Game.Tools;
 using HarmonyLib;
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using Unity.Entities;
 
@@ -21,11 +22,10 @@ namespace DisableHover.Patches
 
             if (applyAction.WasPressedThisFrame())
             {
-                ToolRaycastPatch.SelectedBuildingEntity =
-                    ToolRaycastPatch.LastBuildingEntity;
+                ToolRaycastPatch.AllowBuildingRaycastFrames = 8;
 
                 Mod.log.Info(
-                    $"[ClickDebug] Click detected. SelectedBuildingEntity={ToolRaycastPatch.SelectedBuildingEntity}"
+                    $"[ClickDebug] DefaultToolSystem applyAction pressed. AllowBuildingRaycastFrames={ToolRaycastPatch.AllowBuildingRaycastFrames}"
                 );
             }
         }
@@ -39,7 +39,9 @@ namespace DisableHover.Patches
         public static Entity LastHitEntity = Entity.Null;
         public static Entity LastBuildingEntity = Entity.Null;
 
-        public static Entity SelectedBuildingEntity = Entity.Null;
+        public static int AllowBuildingRaycastFrames = 0;
+
+        private static int _logCounter = 0;
 
         static void Postfix(ref bool __result, ref RaycastResult result)
         {
@@ -68,18 +70,31 @@ namespace DisableHover.Patches
             if (!IsHoveringBuilding)
                 return;
 
-            if (SelectedBuildingEntity != Entity.Null &&
-                LastBuildingEntity == SelectedBuildingEntity)
+            bool fromDefaultTool = CalledFrom("Game.Tools.DefaultToolSystem");
+            bool fromNameTooltip = CalledFrom("Game.UI.Tooltip.RaycastNameTooltipSystem");
+
+            if (_logCounter++ % 60 == 0)
             {
                 Mod.log.Info(
-                    $"[HoverBlock] ALLOW selected building highlight. Building={LastBuildingEntity}"
+                    $"[HoverBlockDebug] Building={LastBuildingEntity}, AllowFrames={AllowBuildingRaycastFrames}, FromDefaultTool={fromDefaultTool}, FromNameTooltip={fromNameTooltip}"
+                );
+
+                DumpCallStack();
+            }
+
+            if (AllowBuildingRaycastFrames > 0)
+            {
+                AllowBuildingRaycastFrames--;
+
+                Mod.log.Info(
+                    $"[HoverBlock] ALLOW because click was detected. FramesLeft={AllowBuildingRaycastFrames}, Building={LastBuildingEntity}"
                 );
 
                 return;
             }
 
             Mod.log.Info(
-                $"[HoverBlock] BLOCK building hover. Owner={LastOwnerEntity}, Hit={LastHitEntity}, Building={LastBuildingEntity}"
+                $"[HoverBlock] BLOCK building hover raycast. Owner={LastOwnerEntity}, Hit={LastHitEntity}, Building={LastBuildingEntity}"
             );
 
             __result = false;
@@ -113,12 +128,11 @@ namespace DisableHover.Patches
         {
             try
             {
-                PropertyInfo property =
-                    AccessTools.Property(typeof(ToolBaseSystem), "applyAction");
+                PropertyInfo property = AccessTools.Property(typeof(ToolBaseSystem), "applyAction");
 
                 if (property == null)
                 {
-                    Mod.log.Info("[ClickDebug] Could not find ToolBaseSystem.applyAction");
+                    Mod.log.Info("[ClickDebug] Could not find ToolBaseSystem.applyAction property");
                     return null;
                 }
 
@@ -129,6 +143,46 @@ namespace DisableHover.Patches
                 Mod.log.Info($"[ClickDebug] GetApplyAction failed: {ex.Message}");
                 return null;
             }
+        }
+
+        private static bool CalledFrom(string fullTypeName)
+        {
+            StackTrace stackTrace = new StackTrace();
+
+            for (int i = 0; i < stackTrace.FrameCount; i++)
+            {
+                string typeName = stackTrace.GetFrame(i)?
+                    .GetMethod()?
+                    .DeclaringType?
+                    .FullName;
+
+                if (typeName == fullTypeName)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static void DumpCallStack()
+        {
+            StackTrace stackTrace = new StackTrace();
+
+            Mod.log.Info("===== RAYCAST CALL STACK START =====");
+
+            for (int i = 0; i < stackTrace.FrameCount; i++)
+            {
+                MethodBase method = stackTrace.GetFrame(i)?.GetMethod();
+
+                if (method == null)
+                    continue;
+
+                string typeName = method.DeclaringType?.FullName ?? "<null>";
+                string methodName = method.Name;
+
+                Mod.log.Info($"[Stack] {i}: {typeName}.{methodName}");
+            }
+
+            Mod.log.Info("===== RAYCAST CALL STACK END =====");
         }
     }
 }
