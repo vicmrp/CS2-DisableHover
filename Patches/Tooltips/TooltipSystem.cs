@@ -1,7 +1,7 @@
 using Game.UI;
 using Colossal.UI.Binding;
 
-namespace DisableHover
+namespace DisableHover.Patches.Tooltips
 {
     public partial class TooltipSystem : UISystemBase
     {

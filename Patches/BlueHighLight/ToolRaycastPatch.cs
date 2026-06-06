@@ -7,7 +7,7 @@ using System;
 using System.Reflection;
 using Unity.Entities;
 
-namespace DisableHover.Patches
+namespace DisableHover.Patches.BlueHighLight
 {
     [HarmonyPatch(typeof(DefaultToolSystem), "OnUpdate")]
     public static class DefaultToolClickPatch

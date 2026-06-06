@@ -1,8 +1,9 @@
 using Colossal.IO.AssetDatabase;
+using DisableHover.Patches.Tooltips;
 using Game.Modding;
 using Game.Settings;
 
-namespace DisableHover
+namespace DisableHover.Settings
 {
     // using Systems;
     [FileLocation("ModsSettings/" + nameof(DisableHover) + "/" + nameof(DisableHover))]

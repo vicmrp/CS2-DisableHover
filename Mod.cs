@@ -1,5 +1,7 @@
 ﻿using Colossal.IO.AssetDatabase;
 using Colossal.Logging;
+using DisableHover.Patches.Tooltips;
+using DisableHover.Settings;
 using Game;
 using Game.Modding;
 using Game.SceneFlow;
@@ -66,11 +68,7 @@ namespace DisableHover
             log.Info($"Settings loaded. DisableBlueHighlight={DisableBlueHighlight}");
 
             updateSystem.UpdateAt<TooltipSystem>(SystemUpdatePhase.UIUpdate);
-
-            // Run this late enough to remove Highlighted after the tool/raycast systems add it.
-            // updateSystem.UpdateAt<DisableHover.Patches.RemoveBuildingHighlightSystem>(
-            //     SystemUpdatePhase.Rendering
-            // );
+            
 
             GameManager.instance.localizationManager.AddSource(
                 "en-US",

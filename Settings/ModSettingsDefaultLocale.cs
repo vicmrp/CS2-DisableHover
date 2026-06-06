@@ -1,7 +1,7 @@
 using Colossal;
 using System.Collections.Generic;
 
-namespace DisableHover
+namespace DisableHover.Settings
 {
     public class ModSettingsDefaultLocale : IDictionarySource
     {
