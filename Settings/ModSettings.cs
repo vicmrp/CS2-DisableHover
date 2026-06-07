@@ -33,14 +33,18 @@ namespace DisableHover.Settings
 
         private void ToggleDisableUIToolTips(bool disabled)
         {
+#if DEBUG
             Mod.log.Info($"DisableUIToolTips button clicked! Disabled state: {disabled}");
+#endif
             TooltipSystem.SetTooltipsEnabled(disabled);
+
         }
 
         private void ToggleDisableBlueHighLightOnBuildings(bool disabled)
         {
+#if DEBUG
             Mod.log.Info($"DisableBlueHighLightOnBuildings: {disabled}");
-
+#endif
             DisableBlueHighLightOnBuildings = disabled;
 
             var settings = Mod.Instance.Settings;

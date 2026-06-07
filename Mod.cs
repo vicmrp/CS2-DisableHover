@@ -42,17 +42,11 @@ namespace DisableHover
             log.Info("=== BUILD MODE: RELEASE ===");
 #endif
 
-#if VERBOSE
-            log.Info("[VERBOSE] Extra noisy logging enabled");
-#endif
 
 #if DEBUG
             log.Debug("[DEBUG] Debug-level message visible only in DEBUG/VERBOSE");
 #endif
 
-#if !DEBUG && !VERBOSE
-            log.Info("[RELEASE] Minimal logging");
-#endif
 
             Settings = new ModSettings(this);
             Settings.RegisterInOptionsUI();

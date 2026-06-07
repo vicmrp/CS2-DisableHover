@@ -9,27 +9,6 @@ using Unity.Entities;
 
 namespace DisableHover.Patches.BlueHighLight
 {
-    [HarmonyPatch(typeof(DefaultToolSystem), "OnUpdate")]
-    public static class DefaultToolClickPatch
-    {
-        static void Prefix(DefaultToolSystem __instance)
-        {
-            IProxyAction applyAction = ToolRaycastPatch.GetApplyAction(__instance);
-
-            if (applyAction == null)
-                return;
-
-            if (applyAction.WasPressedThisFrame())
-            {
-                ToolRaycastPatch.SelectedBuildingEntity =
-                    ToolRaycastPatch.LastBuildingEntity;
-
-                Mod.log.Info(
-                    $"[ClickDebug] Click detected. SelectedBuildingEntity={ToolRaycastPatch.SelectedBuildingEntity}"
-                );
-            }
-        }
-    }
 
     [HarmonyPatch(typeof(ToolRaycastSystem), nameof(ToolRaycastSystem.GetRaycastResult))]
     public static class ToolRaycastPatch
@@ -38,7 +17,6 @@ namespace DisableHover.Patches.BlueHighLight
         public static Entity LastOwnerEntity = Entity.Null;
         public static Entity LastHitEntity = Entity.Null;
         public static Entity LastBuildingEntity = Entity.Null;
-
         public static Entity SelectedBuildingEntity = Entity.Null;
 
         static void Postfix(ref bool __result, ref RaycastResult result)
@@ -71,16 +49,19 @@ namespace DisableHover.Patches.BlueHighLight
             if (SelectedBuildingEntity != Entity.Null &&
                 LastBuildingEntity == SelectedBuildingEntity)
             {
+#if VERBOSE
                 Mod.log.Info(
                     $"[HoverBlock] ALLOW selected building highlight. Building={LastBuildingEntity}"
                 );
-
+#endif
                 return;
             }
 
+#if VERBOSE
             Mod.log.Info(
                 $"[HoverBlock] BLOCK building hover. Owner={LastOwnerEntity}, Hit={LastHitEntity}, Building={LastBuildingEntity}"
             );
+#endif
 
             __result = false;
             result = default;
@@ -118,7 +99,9 @@ namespace DisableHover.Patches.BlueHighLight
 
                 if (property == null)
                 {
+#if DEBUG
                     Mod.log.Info("[ClickDebug] Could not find ToolBaseSystem.applyAction");
+#endif
                     return null;
                 }
 
@@ -126,7 +109,9 @@ namespace DisableHover.Patches.BlueHighLight
             }
             catch (Exception ex)
             {
+#if DEBUG
                 Mod.log.Info($"[ClickDebug] GetApplyAction failed: {ex.Message}");
+#endif
                 return null;
             }
         }
