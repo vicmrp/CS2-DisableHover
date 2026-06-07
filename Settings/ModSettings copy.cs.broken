@@ -1,0 +1,167 @@
+using Colossal.IO.AssetDatabase;
+using DisableHover.Patches.Tooltips;
+using Game.Modding;
+using Game.Settings;
+
+namespace DisableHover.Settings
+{
+    /// <summary>
+    /// Main settings file for DisableHover.
+    /// This controls which settings appear in the in-game options menu.
+    /// </summary>
+    [FileLocation("ModsSettings/" + nameof(DisableHover) + "/" + nameof(DisableHover))]
+    [SettingsUIShowGroupName(MainGroup)]
+    public sealed class ModSettings : ModSetting
+    {
+        public const string MainGroup = "Main Group";
+
+        // =========================
+        // DisableHover - tooltips
+        // =========================
+
+        [SettingsUISection(MainGroup)]
+        [SettingsUISetter(typeof(ModSettings), nameof(ToggleDisableUIToolTips))]
+        public bool DisableUIToolTips { get; set; }
+
+        // =========================
+        // Blue Highlights - settings
+        // =========================
+
+        [SettingsUISection(MainGroup)]
+        [SettingsUISetter(typeof(ModSettings), nameof(ToggleDisableAllBlueHighlights))]
+        public bool DisableAllBlueHighlights { get; set; }
+
+        [SettingsUISection(MainGroup)]
+        [SettingsUISetter(typeof(ModSettings), nameof(ToggleDisableBlueHighlightsOnBuildings))]
+        public bool DisableBlueHighlightsOnBuildings { get; set; }
+
+        [SettingsUISection(MainGroup)]
+        [SettingsUISetter(typeof(ModSettings), nameof(ToggleDisableBlueHighlightsOnRoads))]
+        public bool DisableBlueHighlightsOnRoads { get; set; }
+
+        [SettingsUISection(MainGroup)]
+        [SettingsUISetter(typeof(ModSettings), nameof(ToggleDisableBlueHighlightsOnTrees))]
+        public bool DisableBlueHighlightsOnTrees { get; set; }
+
+        public ModSettings(IMod mod) : base(mod)
+        {
+            SetDefaults();
+        }
+
+        public override void SetDefaults()
+        {
+            // =========================
+            // DisableHover - defaults
+            // =========================
+
+            DisableUIToolTips = false;
+
+            // =========================
+            // Blue Highlights - defaults
+            // =========================
+
+            DisableAllBlueHighlights = false;
+            DisableBlueHighlightsOnBuildings = false;
+            DisableBlueHighlightsOnRoads = false;
+            DisableBlueHighlightsOnTrees = false;
+        }
+
+        // =========================
+        // DisableHover - tooltip logic
+        // =========================
+
+        private void ToggleDisableUIToolTips(bool disabled)
+        {
+#if DEBUG
+            Mod.log.Info($"DisableUIToolTips button clicked! Disabled state: {disabled}");
+#endif
+
+            TooltipSystem.SetTooltipsEnabled(disabled);
+
+            DisableUIToolTips = disabled;
+            ApplyAndSave();
+        }
+
+        // =========================
+        // Blue Highlights - all
+        // =========================
+
+        private void ToggleDisableAllBlueHighlights(bool disabled)
+        {
+#if DEBUG
+            Mod.log.Info($"DisableAllBlueHighlights: {disabled}");
+#endif
+
+            DisableAllBlueHighlights = disabled;
+            ApplyAndSave();
+
+            // This is the old global flag used by your current ToolRaycastPatch.
+            // Later, we can replace this with more specific flags.
+            Mod.DisableBlueHighlight = disabled;
+        }
+
+        // =========================
+        // Blue Highlights - buildings
+        // =========================
+
+        private void ToggleDisableBlueHighlightsOnBuildings(bool disabled)
+        {
+#if DEBUG
+            Mod.log.Info($"DisableBlueHighlightsOnBuildings: {disabled}");
+#endif
+
+            DisableBlueHighlightsOnBuildings = disabled;
+            ApplyAndSave();
+
+            // Temporary compatibility with your current patch.
+            // Later, ToolRaycastPatch should read the specific building setting.
+            Mod.DisableBlueHighlight =
+                DisableAllBlueHighlights ||
+                DisableBlueHighlightsOnBuildings ||
+                DisableBlueHighlightsOnRoads ||
+                DisableBlueHighlightsOnTrees;
+        }
+
+        // =========================
+        // Blue Highlights - roads
+        // =========================
+
+        private void ToggleDisableBlueHighlightsOnRoads(bool disabled)
+        {
+#if DEBUG
+            Mod.log.Info($"DisableBlueHighlightsOnRoads: {disabled}");
+#endif
+
+            DisableBlueHighlightsOnRoads = disabled;
+            ApplyAndSave();
+
+            // Later, ToolRaycastPatch should use this specifically for road entities.
+            Mod.DisableBlueHighlight =
+                DisableAllBlueHighlights ||
+                DisableBlueHighlightsOnBuildings ||
+                DisableBlueHighlightsOnRoads ||
+                DisableBlueHighlightsOnTrees;
+        }
+
+        // =========================
+        // Blue Highlights - trees
+        // =========================
+
+        private void ToggleDisableBlueHighlightsOnTrees(bool disabled)
+        {
+#if DEBUG
+            Mod.log.Info($"DisableBlueHighlightsOnTrees: {disabled}");
+#endif
+
+            DisableBlueHighlightsOnTrees = disabled;
+            ApplyAndSave();
+
+            // Later, ToolRaycastPatch should use this specifically for tree entities.
+            Mod.DisableBlueHighlight =
+                DisableAllBlueHighlights ||
+                DisableBlueHighlightsOnBuildings ||
+                DisableBlueHighlightsOnRoads ||
+                DisableBlueHighlightsOnTrees;
+        }
+    }
+}

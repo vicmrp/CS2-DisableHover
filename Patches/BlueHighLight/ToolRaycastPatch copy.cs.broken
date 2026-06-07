@@ -1,0 +1,331 @@
+using Game.Buildings;
+using Game.Common;
+using Game.Input;
+using Game.Tools;
+using HarmonyLib;
+using System;
+using System.Reflection;
+using Unity.Collections;
+using Unity.Entities;
+
+namespace DisableHover.Patches.BlueHighLight
+{
+    /// <summary>
+    /// DisableHover - blue highlight blocker.
+    ///
+    /// This patch runs after the game performs a tool raycast.
+    /// If the raycast hits something that should not be highlighted,
+    /// the patch clears the result.
+    /// </summary>
+    [HarmonyPatch(typeof(ToolRaycastSystem), nameof(ToolRaycastSystem.GetRaycastResult))]
+    public static class ToolRaycastPatch
+    {
+        // =========================
+        // Blue Highlights - hover state
+        // =========================
+
+        public static bool IsHoveringBuilding = false;
+        public static bool IsHoveringRoad = false;
+        public static bool IsHoveringTree = false;
+
+        public static Entity LastOwnerEntity = Entity.Null;
+        public static Entity LastHitEntity = Entity.Null;
+
+        public static Entity LastHoverEntity = Entity.Null;
+        public static Entity LastBuildingEntity = Entity.Null;
+
+        public static Entity SelectedEntity = Entity.Null;
+        public static Entity SelectedBuildingEntity = Entity.Null;
+
+        static void Postfix(ref bool __result, ref RaycastResult result)
+        {
+            // =========================
+            // Blue Highlights - reset state every raycast
+            // =========================
+
+            IsHoveringBuilding = false;
+            IsHoveringRoad = false;
+            IsHoveringTree = false;
+
+            LastOwnerEntity = Entity.Null;
+            LastHitEntity = Entity.Null;
+            LastHoverEntity = Entity.Null;
+            LastBuildingEntity = Entity.Null;
+
+            // =========================
+            // DisableHover - global checks
+            // =========================
+
+            if (!__result)
+                return;
+
+            if (Mod.Instance == null || Mod.Instance.Settings == null)
+                return;
+
+            var settings = Mod.Instance.Settings;
+
+            bool disableAll = settings.DisableAllBlueHighlights;
+            bool disableBuildings = settings.DisableBlueHighlightsOnBuildings;
+            bool disableRoads = settings.DisableBlueHighlightsOnRoads;
+            bool disableTrees = settings.DisableBlueHighlightsOnTrees;
+
+            // If no blue highlight setting is enabled, do nothing.
+            if (!disableAll && !disableBuildings && !disableRoads && !disableTrees)
+                return;
+
+            // Let bulldozer work normally.
+            if (IsBulldozerActive())
+                return;
+
+            var world = World.DefaultGameObjectInjectionWorld;
+
+            if (world == null)
+                return;
+
+            EntityManager em = world.EntityManager;
+
+            // =========================
+            // Blue Highlights - read raycast entities
+            // =========================
+
+            LastOwnerEntity = result.m_Owner;
+            LastHitEntity = result.m_Hit.m_HitEntity;
+
+            // Prefer owner entity, because it is often the main entity.
+            // If owner is empty, use the exact hit entity.
+            LastHoverEntity = LastOwnerEntity != Entity.Null
+                ? LastOwnerEntity
+                : LastHitEntity;
+
+            if (LastHoverEntity == Entity.Null || !em.Exists(LastHoverEntity))
+                return;
+
+            // =========================
+            // Blue Highlights - entity type detection
+            // =========================
+
+            LastBuildingEntity = ResolveBuilding(em, LastHoverEntity);
+
+            if (LastBuildingEntity == Entity.Null)
+                LastBuildingEntity = ResolveBuilding(em, LastHitEntity);
+
+            IsHoveringBuilding = LastBuildingEntity != Entity.Null;
+            IsHoveringRoad = IsRoadEntity(em, LastOwnerEntity) || IsRoadEntity(em, LastHitEntity);
+            IsHoveringTree = IsTreeEntity(em, LastOwnerEntity) || IsTreeEntity(em, LastHitEntity);
+
+            // =========================
+            // Blue Highlights - decide whether to block
+            // =========================
+
+            bool shouldBlock =
+                disableAll ||
+                (disableBuildings && IsHoveringBuilding) ||
+                (disableRoads && IsHoveringRoad) ||
+                (disableTrees && IsHoveringTree);
+
+            if (!shouldBlock)
+                return;
+
+            // Allow selected entity to keep highlight.
+            if (SelectedEntity != Entity.Null && LastHoverEntity == SelectedEntity)
+            {
+#if VERBOSE
+                Mod.log.Info($"[HoverBlock] ALLOW selected entity highlight. Entity={LastHoverEntity}");
+#endif
+                return;
+            }
+
+            // Allow selected building to keep highlight.
+            if (SelectedBuildingEntity != Entity.Null &&
+                LastBuildingEntity != Entity.Null &&
+                LastBuildingEntity == SelectedBuildingEntity)
+            {
+#if VERBOSE
+                Mod.log.Info($"[HoverBlock] ALLOW selected building highlight. Building={LastBuildingEntity}");
+#endif
+                return;
+            }
+
+#if VERBOSE
+            Mod.log.Info(
+                $"[HoverBlock] BLOCK hover. Owner={LastOwnerEntity}, Hit={LastHitEntity}, Hover={LastHoverEntity}, Building={IsHoveringBuilding}, Road={IsHoveringRoad}, Tree={IsHoveringTree}"
+            );
+#endif
+
+            // Clear the raycast result.
+            // This is what prevents the blue hover highlight.
+            __result = false;
+            result = default;
+        }
+
+        // =========================
+        // Blue Highlights - building detection
+        // =========================
+
+        public static Entity ResolveBuilding(EntityManager em, Entity entity)
+        {
+            if (entity == Entity.Null || !em.Exists(entity))
+                return Entity.Null;
+
+            // Direct building entity.
+            if (em.HasComponent<Building>(entity))
+                return entity;
+
+            // Owned sub-entity.
+            // Example: the hit entity may be a part of a building.
+            if (em.HasComponent<Owner>(entity))
+            {
+                Entity owner = em.GetComponentData<Owner>(entity).m_Owner;
+
+                if (owner != Entity.Null &&
+                    em.Exists(owner) &&
+                    em.HasComponent<Building>(owner))
+                {
+                    return owner;
+                }
+            }
+
+            return Entity.Null;
+        }
+
+        // =========================
+        // Blue Highlights - road detection
+        // =========================
+
+        public static bool IsRoadEntity(EntityManager em, Entity entity)
+        {
+            if (entity == Entity.Null || !em.Exists(entity))
+                return false;
+
+            return EntityHasComponentName(em, entity,
+                "Game.Net.Road",
+                "Game.Net.Edge",
+                "Game.Net.Node",
+                "Road");
+        }
+
+        // =========================
+        // Blue Highlights - tree detection
+        // =========================
+
+        public static bool IsTreeEntity(EntityManager em, Entity entity)
+        {
+            if (entity == Entity.Null || !em.Exists(entity))
+                return false;
+
+            return EntityHasComponentName(em, entity,
+                "Game.Objects.Tree",
+                "Game.Objects.Plant",
+                "Tree",
+                "Plant");
+        }
+
+        // =========================
+        // Blue Highlights - generic component-name detection
+        // =========================
+
+        private static bool EntityHasComponentName(EntityManager em, Entity entity, params string[] names)
+        {
+            if (entity == Entity.Null || !em.Exists(entity))
+                return false;
+
+            NativeArray<ComponentType> componentTypes = default;
+
+            try
+            {
+                componentTypes = em.GetComponentTypes(entity, Allocator.Temp);
+
+                for (int i = 0; i < componentTypes.Length; i++)
+                {
+                    string componentName = componentTypes[i].ToString();
+
+                    for (int j = 0; j < names.Length; j++)
+                    {
+                        if (componentName.Contains(names[j]))
+                            return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                Mod.log.Info($"[HoverBlock] EntityHasComponentName failed: {ex.Message}");
+#endif
+            }
+            finally
+            {
+                if (componentTypes.IsCreated)
+                    componentTypes.Dispose();
+            }
+
+            return false;
+        }
+
+        // =========================
+        // DisableHover - input helper
+        // =========================
+
+        public static IProxyAction GetApplyAction(ToolBaseSystem tool)
+        {
+            try
+            {
+                PropertyInfo property =
+                    AccessTools.Property(typeof(ToolBaseSystem), "applyAction");
+
+                if (property == null)
+                {
+#if DEBUG
+                    Mod.log.Info("[ClickDebug] Could not find ToolBaseSystem.applyAction");
+#endif
+                    return null;
+                }
+
+                return property.GetValue(tool) as IProxyAction;
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                Mod.log.Info($"[ClickDebug] GetApplyAction failed: {ex.Message}");
+#endif
+                return null;
+            }
+        }
+
+        // =========================
+        // DisableHover - bulldozer safety check
+        // =========================
+
+        public static bool IsBulldozerActive()
+        {
+            try
+            {
+                var world = World.DefaultGameObjectInjectionWorld;
+
+                if (world == null)
+                    return false;
+
+                ToolSystem toolSystem = world.GetExistingSystemManaged<ToolSystem>();
+
+                if (toolSystem == null)
+                    return false;
+
+                PropertyInfo activeToolProperty =
+                    AccessTools.Property(typeof(ToolSystem), "activeTool");
+
+                if (activeToolProperty == null)
+                    return false;
+
+                object activeTool = activeToolProperty.GetValue(toolSystem);
+
+                if (activeTool == null)
+                    return false;
+
+                return activeTool.GetType().Name.Contains("Bulldoze");
+            }
+            catch
+            {
+                return false;
+            }
+        }
+    }
+}
