@@ -4,26 +4,31 @@
 	<!--Name of the mod to display to players-->
 	<DisplayName Value="DisableHover" />
 	<!--Short description of the mod-->
-	<ShortDescription Value="Adds a toggle to disable tooltips and hints" />
+	<ShortDescription Value="More options to disable some graphical events" />
 	<!--Long description of the mod. Single line or multi line. Supports minimal markdown subset-->
 	<!--LongDescription Value="This is a long description" /-->
 	<LongDescription>
-This mod adds a toggle button under:
+When I played for long hours I start to get distracted from graphical events, such as tooltips when your mouse hover's over icons. Or when a big building gets highlighted, because your mouse drives by. Since I am interested in programming/modding I build a solution.
 
+Maybe in the future I would also like to add the ability to disable some sounds in the game, such as the Hospital Helicopter.
+
+The MOD does not affekt gameplay at all.
+
+Even though it is very few people that use it, I think it is pretty cool to see someone else use what you build.
+
+The new options panel is located under
 Options → Disablehover
-
-The toggle disables tooltips, hints, and UI explanations.
 	</LongDescription>
 	<!--Thumbnail-->
 	<Thumbnail Value="Properties/Thumbnail.png" />
 	<!--Screenshot, can be set multiple times-->
-	<Screenshot Value="" />
+	<Screenshot Value="Properties/ToolsTips.png" />
 	<!--Tag, can be set multiple times-->
 	<Tag Value="" />
 	<!--Link to the forum post where the mod can be discussed-->
 	<ForumLink Value="" />
 	<!--Version of the mod-->
-	<ModVersion Value="1.1" />
+	<ModVersion Value="1.2" />
 	<!--Recommended version of the base game to use the mod-->
 	<GameVersion Value="1.*" />
 	<!--Dependency for the mod, can be set multiple times-->
@@ -31,7 +36,7 @@ The toggle disables tooltips, hints, and UI explanations.
 	<!--Required DLC, can be set multiple times. Supported values are "Landmark Buildings", "San Fransisco Set", "Beach Properties", "Urban Promenades", "Modern Architecture"-->
 	<RequiredDLC Value="" />
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-	<ChangeLog Value="Code cleanup and performance improvements. No new features." />
+	<ChangeLog Value="New Feature: Ability to disable raycastevents on buildings, when mouse is over them" />
 	<!--<ChangeLog>
 	</ChangeLog>-->
 	<!--External link, can be set multiple times. supported types are "discord", "github", "youtube", "twitch", "x", "paypal", "patreon", "buymeacoffee", "kofi", "crowdin", "gitlab", "gofundme"-->
