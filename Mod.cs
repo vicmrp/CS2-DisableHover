@@ -5,7 +5,7 @@ using DisableHover.Settings;
 using Game;
 using Game.Modding;
 using Game.SceneFlow;
-using HarmonyLib;
+// using HarmonyLib;
 using System.Reflection;
 
 namespace DisableHover
@@ -22,7 +22,7 @@ namespace DisableHover
 
         internal ModSettings Settings { get; set; }
 
-        private Harmony _harmony;
+        // private Harmony _harmony;
 
         public void OnLoad(UpdateSystem updateSystem)
         {
@@ -71,18 +71,12 @@ namespace DisableHover
 
             log.Info("Default locale loaded.");
 
-            _harmony = new Harmony("DisableHover");
-            _harmony.PatchAll(Assembly.GetExecutingAssembly());
-
-            log.Info("Harmony patches applied");
+            updateSystem.UpdateAt<DisableHoverOutlineSystem>(SystemUpdatePhase.Rendering);
         }
 
         public void OnDispose()
         {
             log.Info(nameof(OnDispose));
-
-            _harmony?.UnpatchAll("DisableHover");
-            _harmony = null;
         }
     }
 }

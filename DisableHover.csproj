@@ -64,6 +64,13 @@
 		<Reference Include="Colossal.UI.Binding">
 			<Private>false</Private>
 		</Reference>
+		<!-- HDRP refs are required by OutlineColorSystem (CustomPassVolume + OutlinesWorldUIPass). -->
+        <Reference Include="Unity.RenderPipelines.HighDefinition.Runtime">
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="Unity.RenderPipelines.HighDefinition.Config.Runtime">
+            <Private>false</Private>
+        </Reference>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -83,9 +90,9 @@
 		<None Include="$(ModTargetsFile)" Link="Properties\Mod.targets" />
 	</ItemGroup>
 
-	<ItemGroup>
+	<!-- <ItemGroup>
 	  <PackageReference Include="Lib.Harmony" Version="2.4.2" />
-	</ItemGroup>
+	</ItemGroup> -->
 
 	<Target Name="BuildUI" AfterTargets="AfterBuild">
 		<Exec Command="npm run build" WorkingDirectory="$(ProjectDir)/DisableHoverUI" />
