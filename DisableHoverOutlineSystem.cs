@@ -1,8 +1,13 @@
 using Game;
 using Game.Prefabs;
 using Game.Rendering;
+using Game.Tools;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
 using Unity.Entities;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
 
 namespace DisableHover
@@ -12,16 +17,20 @@ namespace DisableHover
      *
      * It does not block raycasts.
      * It does not modify tool behavior.
-     * It only changes the alpha/transparency of the game's outline colors.
+     * It changes only native rendering state; it does not block raycasts.
      *
      * When DisableBlueHighlight is true:
      *   - hover outline alpha becomes 0
      *   - owner/selection hover alpha becomes 0
      *   - outline material outer/inner alpha becomes 0
+     *   - the DefaultToolSystem projected overlay draw count is temporarily set to 0
+     *     for the render frame, removing the flat blue 2D hover projection
      *
      * When DisableBlueHighlight is false:
      *   - original vanilla colors are restored
+     *   - projected overlays are left completely untouched
      */
+    [UpdateAfter(typeof(OverlayRenderSystem))]
     public partial class DisableHoverOutlineSystem : GameSystemBase
     {
         // Query for the game's rendering settings singleton.
@@ -48,6 +57,21 @@ namespace DisableHover
         // This prevents applying the same change every frame.
         private bool _lastDisabledState;
 
+        // Native OverlayRenderSystem projected category. The blue flat building
+        // hover mesh was isolated experimentally to m_ProjectedInstanceCount.
+        // We deliberately do NOT use RenderingSystem.hideOverlay because that
+        // also hides notification/selection pins and other unrelated overlays.
+        private OverlayRenderSystem _overlayRenderSystem;
+        private ToolSystem _toolSystem;
+        private FieldInfo _projectedInstanceCountField;
+
+        // Per-render-frame restoration state. We only suppress projected overlays
+        // while DefaultToolSystem is active, leaving road/transit/placement tool
+        // projected guides available.
+        private bool _projectedSuppressionActive;
+        private int _projectedCountBeforeSuppression;
+
+
 
         private EntityQuery _guideLineSettingsQuery;
 
@@ -70,8 +94,24 @@ namespace DisableHover
             _guideLineSettingsQuery = GetEntityQuery(
                 ComponentType.ReadWrite<GuideLineSettingsData>()
             );
+
+            // The isolation test proved that the remaining flat blue 2D building
+            // highlight is OverlayRenderSystem's Projected draw category.
+            _overlayRenderSystem = World.GetOrCreateSystemManaged<OverlayRenderSystem>();
+            _toolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
+            _projectedInstanceCountField = typeof(OverlayRenderSystem).GetField(
+                "m_ProjectedInstanceCount",
+                BindingFlags.Instance | BindingFlags.NonPublic
+            );
+
+            if (_projectedInstanceCountField == null)
+            {
+                Mod.log.Error("[DisableHover] Could not resolve OverlayRenderSystem.m_ProjectedInstanceCount; projected hover suppression disabled");
+            }
+
+            RenderPipelineManager.endContextRendering += OnEndContextRendering;
 #if DEBUG
-            Mod.log.Info("[DisableHover] Outline system created");
+            Mod.log.Info("[DisableHover] Outline/projected-overlay system created");
 #endif
         }
 
@@ -79,13 +119,18 @@ namespace DisableHover
         {
             bool disabled = Mod.DisableBlueHighlight;
 
-            // Before changing anything, capture the original game colors.
+            // Suppress only the projected overlay produced by the normal/default
+            // selection tool. This removes the flat blue 2D hover mesh without
+            // globally hiding notification pins or tool overlays.
+            UpdateProjectedOverlaySuppression(disabled);
+
+            // Before changing outline colors, capture the original game colors.
             // If the rendering data or outline material is not ready yet, wait.
             if (!TryCaptureVanillaValues())
                 return;
 
-            // Only react when the setting changes.
-            // This keeps the system mostly idle during normal gameplay.
+            // Only react to outline state changes. Overlay suppression above is
+            // still checked every frame because the game may rewrite hideOverlay.
             if (disabled == _lastDisabledState)
                 return;
 
@@ -96,6 +141,95 @@ namespace DisableHover
 
             _lastDisabledState = disabled;
         }
+
+        private void UpdateProjectedOverlaySuppression(bool disabled)
+        {
+            // If a render callback was skipped for some reason, never carry a
+            // previous-frame suppression into a new update.
+            RestoreProjectedOverlay("next rendering update");
+
+            if (!disabled ||
+                _overlayRenderSystem == null ||
+                _projectedInstanceCountField == null ||
+                _toolSystem == null)
+            {
+                return;
+            }
+
+            // Safety boundary: only remove the projected overlay while the game's
+            // normal selection/inspection tool is active. Other tools (roads,
+            // tracks, public transport, placement, zoning, etc.) keep their own
+            // projected guidance untouched.
+            if (!(_toolSystem.activeTool is DefaultToolSystem))
+                return;
+
+            try
+            {
+                int count = (int)_projectedInstanceCountField.GetValue(_overlayRenderSystem);
+
+                if (count <= 0)
+                    return;
+
+                _projectedCountBeforeSuppression = count;
+                _projectedInstanceCountField.SetValue(_overlayRenderSystem, 0);
+                _projectedSuppressionActive = true;
+#if DEBUG
+                Mod.log.Debug($"[DisableHover] Suppressed projected hover overlay count={count}");
+#endif
+            }
+            catch (Exception ex)
+            {
+                Mod.log.Error(ex, "[DisableHover] Failed to suppress projected hover overlay");
+                _projectedSuppressionActive = false;
+            }
+        }
+
+        private void OnEndContextRendering(
+            ScriptableRenderContext context,
+            List<Camera> cameras)
+        {
+            RestoreProjectedOverlay("endContextRendering");
+        }
+
+        private void RestoreProjectedOverlay(string reason)
+        {
+            if (!_projectedSuppressionActive ||
+                _overlayRenderSystem == null ||
+                _projectedInstanceCountField == null)
+            {
+                return;
+            }
+
+            try
+            {
+                // Restore only if our zero is still present. If the game changed
+                // the value itself during rendering, do not overwrite that state.
+                int current = (int)_projectedInstanceCountField.GetValue(_overlayRenderSystem);
+                if (current == 0)
+                {
+                    _projectedInstanceCountField.SetValue(
+                        _overlayRenderSystem,
+                        _projectedCountBeforeSuppression
+                    );
+                }
+#if DEBUG
+                else
+                {
+                    Mod.log.Debug($"[DisableHover] Projected overlay restore skipped ({reason}); game changed count to {current}");
+                }
+#endif
+            }
+            catch (Exception ex)
+            {
+                Mod.log.Error(ex, "[DisableHover] Failed to restore projected overlay count");
+            }
+            finally
+            {
+                _projectedSuppressionActive = false;
+                _projectedCountBeforeSuppression = 0;
+            }
+        }
+
 
         private bool TryCaptureVanillaValues()
         {
@@ -251,6 +385,23 @@ namespace DisableHover
 #endif            
         }
 
+        protected override void OnDestroy()
+        {
+            RenderPipelineManager.endContextRendering -= OnEndContextRendering;
+
+            // Never leave per-frame projected overlay state modified when the
+            // mod/system is unloaded.
+            RestoreProjectedOverlay("system destroy");
+
+            if (_captured && _lastDisabledState)
+            {
+                RestoreVanillaHighlight();
+                _lastDisabledState = false;
+            }
+
+            base.OnDestroy();
+        }
+
         private bool TryResolveOutlineMaterial()
         {
             if (_outlineMaterial != null)
@@ -266,7 +417,7 @@ namespace DisableHover
 
             // Search HDRP custom pass volumes in the scene.
             // CS2 uses an OutlinesWorldUIPass for world UI outlines/highlights.
-            CustomPassVolume[] volumes = Object.FindObjectsOfType<CustomPassVolume>();
+            CustomPassVolume[] volumes = UnityEngine.Object.FindObjectsOfType<CustomPassVolume>();
 
             foreach (CustomPassVolume volume in volumes)
             {

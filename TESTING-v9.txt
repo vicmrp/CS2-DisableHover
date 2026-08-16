@@ -1,0 +1,12 @@
+DisableHover v9 - separate toolbar buttons
+
+DH = toggles Disable Blue Highlights only.
+DT = toggles Disable Tooltips only.
+
+The DH button does NOT disable/intercept the game's raycast or selection input.
+It only suppresses the native blue hover/highlight rendering, avoiding the old
+Harmony side effects with train-line tools and double-click building selection.
+
+Expected logs:
+Toolbar DH clicked. Disable Blue Highlights = True/False
+Toolbar DT clicked. Disable Tooltips = True/False

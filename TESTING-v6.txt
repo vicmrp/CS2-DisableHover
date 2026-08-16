@@ -1,0 +1,10 @@
+DisableHover v6 keybinding test
+
+Expected:
+- Mod loads and remains in Options > Modding.
+- Both keybindings show as not assigned initially.
+- Assign a key to Toggle Tooltips and Toggle Blue Highlights.
+- Log should contain: DisableHover native hotkeys ready
+- Assigned keys toggle only DisableHover; F8/F9 retain vanilla behavior unless explicitly assigned.
+
+If compilation fails on SettingsUIKeyboardBinding(Key.None, ...), send the exact compiler error. It will reveal the constructor signature used by your current game build.

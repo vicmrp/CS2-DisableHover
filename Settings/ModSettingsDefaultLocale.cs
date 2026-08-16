@@ -5,19 +5,21 @@ namespace DisableHover.Settings
 {
     public class ModSettingsDefaultLocale : IDictionarySource
     {
-        private Dictionary<string, string> Entries { get; set; }
+        private readonly Dictionary<string, string> _entries;
 
         public ModSettingsDefaultLocale(ModSettings settings)
         {
-            Entries = LoadSettingsLocale(settings);
+            _entries = LoadSettingsLocale(settings);
         }
 
-        public IEnumerable<KeyValuePair<string, string>> ReadEntries(IList<IDictionaryEntryError> errors, Dictionary<string, int> indexCounts) => Entries;
-
-        public void Unload()
+        public IEnumerable<KeyValuePair<string, string>> ReadEntries(
+            IList<IDictionaryEntryError> errors,
+            Dictionary<string, int> indexCounts)
         {
-            
+            return _entries;
         }
+
+        public void Unload() { }
 
         private static Dictionary<string, string> LoadSettingsLocale(ModSettings settings)
         {
@@ -27,10 +29,10 @@ namespace DisableHover.Settings
                 { settings.GetOptionGroupLocaleID(ModSettings.MainGroup), "DisableHover" },
 
                 { settings.GetOptionLabelLocaleID(nameof(ModSettings.DisableUIToolTips)), "Disable Tooltips" },
-                { settings.GetOptionDescLocaleID(nameof(ModSettings.DisableUIToolTips)), "Disables annoying and distracting UI tooltips." },
-                
-                { settings.GetOptionLabelLocaleID(nameof(ModSettings.DisableBlueHighLightOnBuildings)), "Disable Blue Highligths" },
-                { settings.GetOptionDescLocaleID(nameof(ModSettings.DisableBlueHighLightOnBuildings)), "When this is enabled, all items that normally are marked blue, will no longer be marked anything." },
+                { settings.GetOptionDescLocaleID(nameof(ModSettings.DisableUIToolTips)), "Disables distracting UI tooltips without changing normal selection or tool input." },
+
+                { settings.GetOptionLabelLocaleID(nameof(ModSettings.DisableBlueHighLightOnBuildings)), "Disable Blue Highlights" },
+                { settings.GetOptionDescLocaleID(nameof(ModSettings.DisableBlueHighLightOnBuildings)), "Hides blue hover/highlight rendering without intercepting selection or raycasts." },
             };
         }
     }

@@ -1,0 +1,14 @@
+DisableHover v7
+
+- Uses Game.Input.BindingKeyboard rather than UnityEngine.InputSystem.Key.
+- Hotkeys default to BindingKeyboard.None (unassigned).
+- Explicit action names remain DisableHover.ToggleTooltips and DisableHover.ToggleBlueHighlights.
+- Toolbar/native highlight behavior unchanged.
+
+Build:
+  dotnet build -c Debug
+
+Expected startup log:
+  DisableHover native hotkeys ready
+
+Then assign keys under Options > Modding > DisableHover.
