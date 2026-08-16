@@ -1,0 +1,37 @@
+DisableHover native v4 test
+===========================
+
+This build fixes the startup unload seen as:
+  DisableHover loading
+  DisableHover UI bindings registered
+  OnDispose
+
+The hotkey system no longer calls Settings.GetAction() during OnCreate.
+It resolves key actions later and catches input errors, so a hotkey issue
+cannot unload the entire mod or remove its Options page.
+
+1. Replace the project files with this version.
+2. From project root:
+     dotnet build -c Debug
+3. Completely restart Cities: Skylines II.
+4. Look for these log lines, in this order:
+     DisableHover loading (native highlight version v4)
+     Settings loaded...
+     DisableHover UI bindings registered
+     Default locale loaded
+     DisableHover hotkey system created (lazy binding)
+     DisableHover loaded successfully
+
+   IMPORTANT: There must NOT be an immediate OnDispose after these lines.
+
+5. Options > Modding should show DisableHover permanently.
+6. Click DH. Expected log:
+     Toolbar DH clicked. Both DisableHover functions = True
+   Click again:
+     Toolbar DH clicked. Both DisableHover functions = False
+7. F8 and F9 should work once the log says:
+     DisableHover native hotkeys ready
+
+If hotkey initialization still fails, the log will say why, but the Options
+page and DH button should continue working. Send that exact warning and we can
+fix only the binding declaration without destabilizing the rest of the mod.

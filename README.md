@@ -1,8 +1,8 @@
-# Disable Hover (CS2 Mod)
+# DisableHover native v10
 
-This mod is very simple.
+- Two independent toolbar buttons: DH = blue hover highlight, DT = tooltips.
+- No hotkey feature.
+- Explicitly excludes any stale `DisableHoverHotkeySystem.cs` left from older versions.
+- No Harmony raycast/selection patches.
 
-## Description
-The mod disables the annoying UI events that occur when you hover your mouse over tools.
-
-
+You can also safely delete `DisableHoverHotkeySystem.cs` from the project root.

@@ -1,11 +1,10 @@
-using Colossal.IO.AssetDatabase;
-using DisableHover.Patches.Tooltips;
+﻿using Colossal.IO.AssetDatabase;
 using Game.Modding;
 using Game.Settings;
 
 namespace DisableHover.Settings
 {
-    // using Systems;
+    // Keep a single settings group matching the original working DisableHover layout.
     [FileLocation("ModsSettings/" + nameof(DisableHover) + "/" + nameof(DisableHover))]
     [SettingsUIShowGroupName(MainGroup)]
     public sealed class ModSettings : ModSetting
@@ -33,25 +32,12 @@ namespace DisableHover.Settings
 
         private void ToggleDisableUIToolTips(bool disabled)
         {
-#if DEBUG
-            Mod.log.Info($"DisableUIToolTips button clicked! Disabled state: {disabled}");
-#endif
-            TooltipSystem.SetTooltipsEnabled(disabled);
-
+            Mod.SetTooltipsDisabled(disabled);
         }
 
         private void ToggleDisableBlueHighLightOnBuildings(bool disabled)
         {
-#if DEBUG
-            Mod.log.Info($"DisableBlueHighLightOnBuildings: {disabled}");
-#endif
-            DisableBlueHighLightOnBuildings = disabled;
-
-            var settings = Mod.Instance.Settings;
-            settings.DisableBlueHighLightOnBuildings = disabled;
-            settings.ApplyAndSave();
-
-            Mod.DisableBlueHighlight = disabled;
+            Mod.SetBlueHighlightsDisabled(disabled);
         }
     }
 }

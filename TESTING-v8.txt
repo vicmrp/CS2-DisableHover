@@ -1,0 +1,10 @@
+DisableHover v8 - hotkeys removed entirely
+
+Expected settings:
+- Disable Tooltips
+- Disable Blue Highlights
+
+Expected toolbar:
+- DH button remains and toggles both settings together.
+
+There is no ProxyBinding, no keyboard action, and no DisableHoverHotkeySystem in this version.
