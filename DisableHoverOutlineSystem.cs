@@ -107,27 +107,46 @@ namespace DisableHover
         {
             bool disabled = Mod.DisableBlueHighlight;
 
+            // The bulldozer's hover highlight is functional feedback: it tells the
+            // player exactly what will be deleted. Never suppress highlights while
+            // a bulldoze tool is active, even when DH is enabled.
+            bool preserveToolHighlight = IsBulldozerToolActive();
+            bool hideHighlight = disabled && !preserveToolHighlight;
+
             // Suppress only the projected overlay produced by the normal/default
             // selection tool. This removes the flat blue 2D hover mesh without
             // globally hiding notification pins or tool overlays.
-            UpdateProjectedOverlaySuppression(disabled);
+            UpdateProjectedOverlaySuppression(hideHighlight);
 
             // Before changing outline colors, capture the original game colors.
             // If the rendering data or outline material is not ready yet, wait.
             if (!TryCaptureVanillaValues())
                 return;
 
-            // Only react to outline state changes. Overlay suppression above is
-            // still checked every frame because the game may rewrite hideOverlay.
-            if (disabled == _lastDisabledState)
+            // React to the effective rendering state, not just the DH setting.
+            // Entering the bulldozer therefore restores vanilla highlighting, and
+            // leaving it hides the ordinary hover highlight again automatically.
+            if (hideHighlight == _lastDisabledState)
                 return;
 
-            if (disabled)
+            if (hideHighlight)
                 ApplyInvisibleHighlight();
             else
                 RestoreVanillaHighlight();
 
-            _lastDisabledState = disabled;
+            _lastDisabledState = hideHighlight;
+        }
+
+        private bool IsBulldozerToolActive()
+        {
+            if (_toolSystem == null || _toolSystem.activeTool == null)
+                return false;
+
+            // Avoid a hard dependency on a particular CS2 bulldozer class name.
+            // Vanilla and modded bulldozer tools conventionally contain
+            // "Bulldoz" in their runtime type name.
+            string typeName = _toolSystem.activeTool.GetType().Name;
+            return typeName.IndexOf("Bulldoz", StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         private void UpdateProjectedOverlaySuppression(bool disabled)
