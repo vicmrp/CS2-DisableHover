@@ -17,7 +17,9 @@ namespace DisableHover
      *
      * It does not block raycasts.
      * It does not modify tool behavior.
-     * It changes only native rendering state; it does not block raycasts.
+     * It changes only native hover rendering state; it does not block raycasts.
+     * GuideLineSettingsData is intentionally never modified because those colors
+     * are also used by road/network tool preview meshes.
      *
      * When DisableBlueHighlight is true:
      *   - hover outline alpha becomes 0
@@ -72,16 +74,6 @@ namespace DisableHover
         private int _projectedCountBeforeSuppression;
 
 
-
-        private EntityQuery _guideLineSettingsQuery;
-
-        private bool _capturedGuidelines;
-        private Color _vanillaVeryLowGuidelineColor;
-        private Color _vanillaLowGuidelineColor;
-        private Color _vanillaMediumGuidelineColor;
-        private Color _vanillaHighGuidelineColor;
-
-
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -89,10 +81,6 @@ namespace DisableHover
             // Find the singleton entity that stores rendering settings.
             _renderSettingsQuery = GetEntityQuery(
                 ComponentType.ReadWrite<RenderingSettingsData>()
-            );
-
-            _guideLineSettingsQuery = GetEntityQuery(
-                ComponentType.ReadWrite<GuideLineSettingsData>()
             );
 
             // The isolation test proved that the remaining flat blue 2D building
@@ -252,20 +240,6 @@ namespace DisableHover
             if (!TryResolveOutlineMaterial())
                 return false;
 
-            if (!_guideLineSettingsQuery.IsEmptyIgnoreFilter && !_capturedGuidelines)
-            {
-                Entity guidelineEntity = _guideLineSettingsQuery.GetSingletonEntity();
-                GuideLineSettingsData guideData =
-                    EntityManager.GetComponentData<GuideLineSettingsData>(guidelineEntity);
-
-                _vanillaVeryLowGuidelineColor = guideData.m_VeryLowPriorityColor;
-                _vanillaLowGuidelineColor = guideData.m_LowPriorityColor;
-                _vanillaMediumGuidelineColor = guideData.m_MediumPriorityColor;
-                _vanillaHighGuidelineColor = guideData.m_HighPriorityColor;
-
-                _capturedGuidelines = true;
-            }
-
             // Save vanilla material colors.
             _vanillaOuterColor = _outlineMaterial.GetColor("_OuterColor");
             _vanillaInnerColor = _outlineMaterial.GetColor("_InnerColor");
@@ -295,30 +269,6 @@ namespace DisableHover
 
                 data.m_HoveredColor = hovered;
                 data.m_OwnerColor = owner;
-
-                if (!_guideLineSettingsQuery.IsEmptyIgnoreFilter)
-                {
-                    Entity guidelineEntity = _guideLineSettingsQuery.GetSingletonEntity();
-                    GuideLineSettingsData guideData =
-                        EntityManager.GetComponentData<GuideLineSettingsData>(guidelineEntity);
-
-                    Color veryLow = guideData.m_VeryLowPriorityColor;
-                    Color low = guideData.m_LowPriorityColor;
-                    Color medium = guideData.m_MediumPriorityColor;
-                    Color high = guideData.m_HighPriorityColor;
-
-                    veryLow.a = 0f;
-                    low.a = 0f;
-                    medium.a = 0f;
-                    high.a = 0f;
-
-                    guideData.m_VeryLowPriorityColor = veryLow;
-                    guideData.m_LowPriorityColor = low;
-                    guideData.m_MediumPriorityColor = medium;
-                    guideData.m_HighPriorityColor = high;
-
-                    EntityManager.SetComponentData(guidelineEntity, guideData);
-                }
 
                 EntityManager.SetComponentData(entity, data);
             }
@@ -358,20 +308,6 @@ namespace DisableHover
                 data.m_OwnerColor = _vanillaOwnerColor;
 
                 EntityManager.SetComponentData(entity, data);
-            }
-
-            if (_capturedGuidelines && !_guideLineSettingsQuery.IsEmptyIgnoreFilter)
-            {
-                Entity guidelineEntity = _guideLineSettingsQuery.GetSingletonEntity();
-                GuideLineSettingsData guideData =
-                    EntityManager.GetComponentData<GuideLineSettingsData>(guidelineEntity);
-
-                guideData.m_VeryLowPriorityColor = _vanillaVeryLowGuidelineColor;
-                guideData.m_LowPriorityColor = _vanillaLowGuidelineColor;
-                guideData.m_MediumPriorityColor = _vanillaMediumGuidelineColor;
-                guideData.m_HighPriorityColor = _vanillaHighGuidelineColor;
-
-                EntityManager.SetComponentData(guidelineEntity, guideData);
             }
             
             // Restore HDRP material colors.
